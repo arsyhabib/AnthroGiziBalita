@@ -604,7 +604,6 @@
                         </a>
                     </li>
                     
-                    <!-- Calculator Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-calculator"></i> Kalkulator
@@ -613,7 +612,7 @@
                             <li><a class="dropdown-item" href="{{ url_for('calculator_page') }}">
                                 <i class="fas fa-chart-line"></i> Kalkulator Lengkap
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('easy_mode_page') }}">
+                            <li><a class="dropdown-item" href="{{ url_for('easy_mode') }}">
                                 <i class="fas fa-magic"></i> Mode Mudah
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('growth_velocity_page') }}">
@@ -623,12 +622,11 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'kpsp' %}active{% endif %}" href="{{ url_for('kpsp') }}">
+                        <a class="nav-link {% if request.endpoint == 'kpsp_page' %}active{% endif %}" href="{{ url_for('kpsp_page') }}">
                             <i class="fas fa-clipboard-check"></i> KPSP
                         </a>
                     </li>
                     
-                    <!-- Resources Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-book"></i> Sumber Daya
@@ -644,23 +642,23 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'reports' %}active{% endif %}" href="{{ url_for('reports') }}">
+                        <a class="nav-link {% if request.endpoint == 'reports_page' %}active{% endif %}" href="{{ url_for('reports_page') }}">
                             <i class="fas fa-file-alt"></i> Laporan
                         </a>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'premium' %}active{% endif %}" href="{{ url_for('premium') }}">
+                        <a class="nav-link {% if request.endpoint == 'premium_page' %}active{% endif %}" href="{{ url_for('premium_page') }}">
                             <i class="fas fa-crown"></i> Premium
                         </a>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}">
+                        <a class="nav-link {% if request.endpoint == 'about_page' %}active{% endif %}" href="{{ url_for('about_page') }}">
                             <i class="fas fa-info-circle"></i> Tentang
                         </a>
                     </li>
-                </ul>
+</ul>
                 
                 <!-- Theme and Mode Selectors -->
                 <div class="d-flex align-items-center gap-3">

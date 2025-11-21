@@ -661,24 +661,24 @@
 </ul>
                 
                 <!-- Theme and Mode Selectors -->
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Theme Selector -->
+<div class="d-flex align-items-center gap-3">
                     <div class="theme-selector">
-                        <div class="theme-option theme-pink {% if theme.name == 'Pink Pastel' %}active{% endif %}" 
+                        <div class="theme-option theme-pink" 
                              onclick="setTheme('pink_pastel')" title="Pink Pastel"></div>
-                        <div class="theme-option theme-blue {% if theme.name == 'Blue Pastel' %}active{% endif %}" 
+                        
+                        <div class="theme-option theme-blue active" 
                              onclick="setTheme('blue_pastel')" title="Blue Pastel"></div>
-                        <div class="theme-option theme-lavender {% if theme.name == 'Lavender Pastel' %}active{% endif %}" 
+                             
+                        <div class="theme-option theme-lavender" 
                              onclick="setTheme('lavender_pastel')" title="Lavender Pastel"></div>
                     </div>
                     
-                    <!-- Mode Selector -->
                     <div class="mode-selector">
-                        <button class="mode-btn parent {% if mode == 'parent' %}active{% endif %}" 
+                        <button class="mode-btn parent active" 
                                 onclick="setMode('parent')" title="Mode Orang Tua">
                             <i class="fas fa-user-friends"></i>
                         </button>
-                        <button class="mode-btn healthcare {% if mode == 'healthcare' %}active{% endif %}" 
+                        <button class="mode-btn healthcare" 
                                 onclick="setMode('healthcare')" title="Mode Nakes">
                             <i class="fas fa-user-md"></i>
                         </button>

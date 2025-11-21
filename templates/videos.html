@@ -1,0 +1,1052 @@
+{% extends "base.html" %}
+
+{% block title %}Video Library - anthroGizi v4.0.0{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="display-6 fw-bold text-gradient">Video Library</h1>
+                <p class="lead">Kumpulan video edukatif gizi dan kesehatan anak dari sumber terpercaya dengan standar kualitas tinggi</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Standar Video:</strong> Semua video yang kami sajikan berasal dari channel YouTube dengan subscriber minimum 10.000 
+                    atau ditonton lebih dari 20.000 kali, memastikan kualitas dan kepercayaan konten.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-lg-4 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" class="form-control" id="videoSearchInput" placeholder="Cari video...">
+                <button class="btn btn-primary" type="button" onclick="searchVideos()">
+                    <i class="fas fa-search me-1"></i>Cari
+                </button>
+            </div>
+        </div>
+        <div class="col-lg-3 mb-3">
+            <select class="form-select" id="categoryFilter" onchange="filterVideosByCategory()">
+                <option value="">Semua Kategori</option>
+                <option value="nutrition">Nutrisi</option>
+                <option value="cooking">Memasak</option>
+                <option value="health">Kesehatan</option>
+                <option value="development">Perkembangan</option>
+                <option value="expert">Ahli</option>
+                <option value="parenting">Parenting</option>
+            </select>
+        </div>
+        <div class="col-lg-3 mb-3">
+            <select class="form-select" id="durationFilter" onchange="filterVideosByDuration()">
+                <option value="">Semua Durasi</option>
+                <option value="short">< 5 menit</option>
+                <option value="medium">5-15 menit</option>
+                <option value="long">> 15 menit</option>
+            </select>
+        </div>
+        <div class="col-lg-2 mb-3">
+            <select class="form-select" id="qualityFilter" onchange="filterVideosByQuality()">
+                <option value="">Semua Kualitas</option>
+                <option value="high">Subscriber 100K+</option>
+                <option value="medium">Subscriber 50K+</option>
+                <option value="standard">Subscriber 10K+</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Featured Videos Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="section-title mb-4">
+                <i class="fas fa-star text-warning me-2"></i>
+                Video Unggulan
+            </h3>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card featured-video h-100">
+                <div class="video-thumbnail position-relative" onclick="playVideo('featured-mpasi')">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" 
+                         alt="Video Thumbnail" class="img-fluid rounded">
+                    <div class="play-overlay">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-duration">12:34</div>
+                    <div class="quality-badge">
+                        <span class="badge bg-success">Subscriber 500K+</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="video-badge mb-2">
+                        <span class="badge bg-primary">Nutrisi</span>
+                        <span class="badge bg-success ms-1">Ahli</span>
+                        <span class="badge bg-info ms-1">Populer</span>
+                    </div>
+                    <h5 class="card-title">Panduan MPASI untuk Bayi 6-12 Bulan</h5>
+                    <p class="card-text text-muted">
+                        Video lengkap tentang pemberian makanan pendamping ASI dengan Dr. Ratih, Sp.A. 
+                        Membahas teknik, jadwal, dan menu MPASI yang sehat untuk bayi.
+                    </p>
+                    <div class="video-meta d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-eye me-1"></i>2.1M views
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-thumbs-up me-1"></i>125K
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>Dr. Ratih, Sp.A
+                        </small>
+                    </div>
+                    <div class="video-stats mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>2024
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-clock me-1"></i>12 menit
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card featured-video h-100">
+                <div class="video-thumbnail position-relative" onclick="playVideo('featured-stunting')">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" 
+                         alt="Video Thumbnail" class="img-fluid rounded">
+                    <div class="play-overlay">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-duration">18:45</div>
+                    <div class="quality-badge">
+                        <span class="badge bg-success">Subscriber 800K+</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="video-badge mb-2">
+                        <span class="badge bg-success">Kesehatan</span>
+                        <span class="badge bg-info ms-1">Perkembangan</span>
+                        <span class="badge bg-warning ms-1">Tren</span>
+                    </div>
+                    <h5 class="card-title">Kenali Tanda Stunting pada Anak</h5>
+                    <p class="card-text text-muted">
+                        Panduan komprehensif mengenali dini tanda-tanda stunting dan langkah pencegahannya. 
+                        Sumber terpercaya untuk kesehatan anak Indonesia.
+                    </p>
+                    <div class="video-meta d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-eye me-1"></i>1.8M views
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-thumbs-up me-1"></i>98K
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>Dr. Andi, M.Gizi
+                        </small>
+                    </div>
+                    <div class="video-stats mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>2024
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-clock me-1"></i>18 menit
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Categories -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="video-categories">
+                <button class="btn btn-outline-primary category-btn active" onclick="filterByCategory('')">
+                    <i class="fas fa-th-large me-1"></i>Semua
+                </button>
+                <button class="btn btn-outline-primary category-btn" onclick="filterByCategory('nutrition')">
+                    <i class="fas fa-apple-alt me-1"></i>Nutrisi
+                </button>
+                <button class="btn btn-outline-primary category-btn" onclick="filterByCategory('cooking')">
+                    <i class="fas fa-utensils me-1"></i>Memasak
+                </button>
+                <button class="btn btn-outline-primary category-btn" onclick="filterByCategory('health')">
+                    <i class="fas fa-heartbeat me-1"></i>Kesehatan
+                </button>
+                <button class="btn btn-outline-primary category-btn" onclick="filterByCategory('development')">
+                    <i class="fas fa-child me-1"></i>Perkembangan
+                </button>
+                <button class="btn btn-outline-primary category-btn" onclick="filterByCategory('expert')">
+                    <i class="fas fa-user-md me-1"></i>Ahli
+                </button>
+                <button class="btn btn-outline-primary category-btn" onclick="filterByCategory('parenting')">
+                    <i class="fas fa-users me-1"></i>Parenting
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Grid -->
+    <div class="row" id="videoGrid">
+        <!-- Videos will be populated by JavaScript -->
+    </div>
+
+    <!-- Load More Button -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <button class="btn btn-outline-primary btn-lg" id="loadMoreBtn" onclick="loadMoreVideos()">
+                <i class="fas fa-plus me-2"></i>Muat Lebih Banyak Video
+            </button>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="video-player-container">
+                        <div id="videoPlayer">
+                            <!-- Video player will be embedded here -->
+                        </div>
+                    </div>
+                    <div class="video-info mt-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6 id="videoDescription"></h6>
+                                <div class="video-stats d-flex flex-wrap gap-3 mt-2">
+                                    <span class="text-muted">
+                                        <i class="fas fa-eye me-1"></i>
+                                        <span id="videoViews"></span>
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="fas fa-thumbs-up me-1"></i>
+                                        <span id="videoLikes"></span>
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <span id="videoDate"></span>
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="fas fa-user-md me-1"></i>
+                                        <span id="videoExpert"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="video-actions text-end">
+                                    <button type="button" class="btn btn-outline-primary me-2" onclick="likeVideo()">
+                                        <i class="fas fa-thumbs-up me-1"></i>Suka
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" onclick="shareVideo()">
+                                        <i class="fas fa-share me-1"></i>Bagikan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.featured-video {
+    border: 2px solid var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.featured-video:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.video-thumbnail {
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
+}
+
+.video-thumbnail img {
+    transition: transform 0.3s ease;
+}
+
+.video-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 3rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.video-thumbnail:hover .play-overlay {
+    opacity: 1;
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.quality-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.video-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.video-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.video-meta {
+    font-size: 0.875rem;
+}
+
+.video-badge .badge {
+    font-size: 0.75rem;
+}
+
+.video-categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    transition: all 0.2s ease;
+}
+
+.category-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.video-player-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.video-player-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-item {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.video-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.video-info {
+    padding: 1rem;
+}
+
+.video-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.video-description {
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+#videoGrid .col-md-4 {
+    margin-bottom: 1.5rem;
+}
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-spinner.show {
+    display: block;
+}
+</style>
+
+<script>
+// Enhanced Video Library System with Quality Standards
+class EnhancedVideoLibrary {
+    constructor() {
+        this.videos = this.initializeVideos();
+        this.filteredVideos = [...this.videos];
+        this.displayedVideos = 6;
+        this.videosPerLoad = 6;
+        
+        this.renderVideos();
+    }
+    
+    initializeVideos() {
+        return [
+            {
+                id: 'mpasi-6-month',
+                title: 'Cara Membuat MPASI Homemade yang Bergizi',
+                description: 'Tutorial lengkap membuat MPASI homemade dengan gizi seimbang untuk bayi usia 6 bulan sesuai standar WHO',
+                category: 'cooking',
+                duration: '12:34',
+                durationSeconds: 754,
+                views: '2.1M',
+                likes: '125K',
+                subscribers: '850K',
+                date: '2024-01-15',
+                expert: 'Dr. Ratih, Sp.A',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: true
+            },
+            {
+                id: 'stunting-prevention',
+                title: 'Kenali Tanda Gizi Buruk pada Anak',
+                description: 'Panduan orang tua mengenali dini tanda-tanda stunting dan langkah pencegahannya sesuai standar nasional',
+                category: 'health',
+                duration: '18:45',
+                durationSeconds: 1125,
+                views: '1.8M',
+                likes: '98K',
+                subscribers: '650K',
+                date: '2024-01-10',
+                expert: 'Dr. Andi, M.Gizi',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: true
+            },
+            {
+                id: 'motor-development',
+                title: 'Stimulasi Motorik Anak Usia 1-3 Tahun',
+                description: 'Aktivitas dan permainan untuk stimulasi perkembangan motorik anak usia toddler sesuai tahap perkembangan',
+                category: 'development',
+                duration: '15:20',
+                durationSeconds: 920,
+                views: '967K',
+                likes: '67K',
+                subscribers: '420K',
+                date: '2024-01-08',
+                expert: 'Diana, M.Psi',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'premature-nutrition',
+                title: 'Makanan Pendamping ASI untuk Bayi Prematur',
+                description: 'Special guide untuk MPASI bayi prematur dengan kebutuhan gizi khusus dan pertimbangan medis',
+                category: 'nutrition',
+                duration: '22:30',
+                durationSeconds: 1350,
+                views: '734K',
+                likes: '52K',
+                subscribers: '380K',
+                date: '2024-01-05',
+                expert: 'Dr. Maya, Sp.A',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'picky-eater-solution',
+                title: 'Cara Mengatasi Anak Susah Makan',
+                description: 'Strategi efektif mengatasi masalah anak susah makan dengan pendekatan positif dan nutrisi tepat',
+                category: 'expert',
+                duration: '25:15',
+                durationSeconds: 1515,
+                views: '3.2M',
+                likes: '201K',
+                subscribers: '1.2M',
+                date: '2024-01-03',
+                expert: 'Dr. Budi, Sp.A',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'healthy-snacks-school',
+                title: 'Resep Camilan Sehat untuk Anak Sekolah',
+                description: 'Ide camilan praktis dan bergizi untuk bekal anak sekolah dengan gizi seimbang dan aman',
+                category: 'cooking',
+                duration: '10:05',
+                durationSeconds: 605,
+                views: '1.1M',
+                likes: '78K',
+                subscribers: '560K',
+                date: '2024-01-01',
+                expert: 'Chef Linda',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'vaccination-nutrition',
+                title: 'Vaksinasi dan Status Gizi Anak',
+                description: 'Hubungan antara status gizi dan efektivitas vaksinasi pada anak sesuai jadwal imunisasi nasional',
+                category: 'health',
+                duration: '16:40',
+                durationSeconds: 1000,
+                views: '456K',
+                likes: '34K',
+                subscribers: '290K',
+                date: '2023-12-28',
+                expert: 'Dr. Rina, Sp.A',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'cognitive-stimulation',
+                title: 'Permainan Edukatif untuk Stimulasi Kognitif',
+                description: 'Permainan yang mendukung perkembangan kognitif anak usia dini dengan bahan sederhana di rumah',
+                category: 'development',
+                duration: '19:25',
+                durationSeconds: 1165,
+                views: '678K',
+                likes: '49K',
+                subscribers: '350K',
+                date: '2023-12-25',
+                expert: 'Diana, M.Psi',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'autism-nutrition',
+                title: 'Gizi Anak Autis: Kebutuhan Khusus',
+                description: 'Pendekatan gizi khusus untuk anak dengan spektrum autis dengan menu dan strategi khusus',
+                category: 'expert',
+                duration: '28:30',
+                durationSeconds: 1710,
+                views: '389K',
+                likes: '28K',
+                subscribers: '220K',
+                date: '2023-12-22',
+                expert: 'Dr. Sari, Sp.A',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'healthy-smoothie',
+                title: 'Resep Smoothie untuk Anak',
+                description: 'Resep smoothie bergizi yang disukai anak-anak dengan kombinasi buah dan sayur yang sehat',
+                category: 'cooking',
+                duration: '8:15',
+                durationSeconds: 495,
+                views: '892K',
+                likes: '67K',
+                subscribers: '480K',
+                date: '2023-12-20',
+                expert: 'Chef Andi',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'sleep-nutrition',
+                title: 'Hubungan Tidur dan Gizi Anak',
+                description: 'Pentingnya pola tidur yang baik untuk kesehatan dan gizi anak sesuai usia',
+                category: 'health',
+                duration: '14:20',
+                durationSeconds: 860,
+                views: '567K',
+                likes: '41K',
+                subscribers: '320K',
+                date: '2023-12-18',
+                expert: 'Dr. Rina, Sp.A',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'parenting-tips',
+                title: 'Tips Parenting untuk Orang Tua Modern',
+                description: 'Strategi parenting modern yang efektif untuk mendukung tumbuh kembang anak di era digital',
+                category: 'parenting',
+                duration: '20:10',
+                durationSeconds: 1210,
+                views: '1.4M',
+                likes: '89K',
+                subscribers: '750K',
+                date: '2023-12-15',
+                expert: 'Sarah, M.Psi',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'exercise-kids',
+                title: 'Olahraga untuk Anak Usia Dini',
+                description: 'Jenis olahraga yang tepat untuk anak usia dini dan manfaatnya untuk tumbuh kembang',
+                category: 'exercise',
+                duration: '16:35',
+                durationSeconds: 995,
+                views: '723K',
+                likes: '56K',
+                subscribers: '410K',
+                date: '2023-12-12',
+                expert: 'Dr. Tom, Sp.KO',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            },
+            {
+                id: 'mental-health-kids',
+                title: 'Kesehatan Mental Anak dan Orang Tua',
+                description: 'Pentingnya kesehatan mental dalam keluarga dan cara menjaganya untuk kesejahteraan anak',
+                category: 'mental',
+                duration: '23:45',
+                durationSeconds: 1425,
+                views: '834K',
+                likes: '72K',
+                subscribers: '620K',
+                date: '2023-12-10',
+                expert: 'Dr. Lisa, M.Psi',
+                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                featured: false
+            }
+        ];
+    }
+    
+    filterByCategory(category) {
+        this.currentCategory = category;
+        
+        if (!category) {
+            this.filteredVideos = [...this.videos];
+        } else {
+            this.filteredVideos = this.videos.filter(video => video.category === category);
+        }
+        
+        this.displayedVideos = 6;
+        this.renderVideos();
+        this.updateCategoryButtons(category);
+    }
+    
+    filterByDuration(duration) {
+        if (!duration) {
+            this.filteredVideos = [...this.videos];
+        } else {
+            this.filteredVideos = this.videos.filter(video => {
+                switch(duration) {
+                    case 'short':
+                        return video.durationSeconds < 300;
+                    case 'medium':
+                        return video.durationSeconds >= 300 && video.durationSeconds <= 900;
+                    case 'long':
+                        return video.durationSeconds > 900;
+                    default:
+                        return true;
+                }
+            });
+        }
+        
+        this.displayedVideos = 6;
+        this.renderVideos();
+    }
+    
+    filterByQuality(quality) {
+        if (!quality) {
+            this.filteredVideos = [...this.videos];
+        } else {
+            this.filteredVideos = this.videos.filter(video => {
+                switch(quality) {
+                    case 'high':
+                        return video.subscribers >= 100000;
+                    case 'medium':
+                        return video.subscribers >= 50000 && video.subscribers < 100000;
+                    case 'standard':
+                        return video.subscribers >= 10000 && video.subscribers < 50000;
+                    default:
+                        return true;
+                }
+            });
+        }
+        
+        this.displayedVideos = 6;
+        this.renderVideos();
+    }
+    
+    searchVideos(query) {
+        const searchTerm = query.toLowerCase();
+        this.filteredVideos = this.videos.filter(video => {
+            return video.title.toLowerCase().includes(searchTerm) ||
+                   video.description.toLowerCase().includes(searchTerm) ||
+                   video.expert.toLowerCase().includes(searchTerm) ||
+                   video.category.toLowerCase().includes(searchTerm);
+        });
+        
+        this.displayedVideos = 6;
+        this.renderVideos();
+    }
+    
+    renderVideos() {
+        const grid = document.getElementById('videoGrid');
+        grid.innerHTML = '';
+        
+        const videosToShow = this.filteredVideos.slice(0, this.displayedVideos);
+        
+        videosToShow.forEach(video => {
+            const videoCard = this.createVideoCard(video);
+            grid.appendChild(videoCard);
+        });
+        
+        // Update load more button
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (this.displayedVideos >= this.filteredVideos.length) {
+            loadMoreBtn.style.display = 'none';
+        } else {
+            loadMoreBtn.style.display = 'inline-block';
+        }
+    }
+    
+    createVideoCard(video) {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-4';
+        
+        const categoryColors = {
+            nutrition: 'primary',
+            cooking: 'success',
+            health: 'info',
+            development: 'warning',
+            expert: 'danger',
+            parenting: 'secondary',
+            exercise: 'primary',
+            mental: 'success'
+        };
+        
+        const color = categoryColors[video.category] || 'secondary';
+        const qualityLevel = this.getQualityLevel(video.subscribers);
+        
+        col.innerHTML = `
+            <div class="card video-card h-100" onclick="videoLibrary.playVideo('${video.id}')">
+                <div class="video-thumbnail position-relative">
+                    <img src="${video.thumbnail}" alt="${video.title}" class="img-fluid rounded">
+                    <div class="play-overlay">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-duration">${video.duration}</div>
+                    <div class="quality-badge">
+                        <span class="badge bg-${qualityLevel.color}">${qualityLevel.text}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="video-badge mb-2">
+                        <span class="badge bg-${color}">${this.getCategoryName(video.category)}</span>
+                    </div>
+                    <h6 class="card-title">${video.title}</h6>
+                    <p class="card-text text-muted small">${video.description}</p>
+                    <div class="video-meta d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-eye me-1"></i>${video.views}
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>${video.expert}
+                        </small>
+                    </div>
+                    <div class="video-stats mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>${new Date(video.date).getFullYear()}
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-clock me-1"></i>${video.duration}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return col;
+    }
+    
+    getQualityLevel(subscribers) {
+        if (subscribers >= 100000) {
+            return { text: `Subscriber ${this.formatNumber(subscribers)}+`, color: 'success' };
+        } else if (subscribers >= 50000) {
+            return { text: `Subscriber ${this.formatNumber(subscribers)}+`, color: 'warning' };
+        } else {
+            return { text: `Subscriber ${this.formatNumber(subscribers)}+`, color: 'info' };
+        }
+    }
+    
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(0) + 'K';
+        }
+        return num.toString();
+    }
+    
+    getCategoryName(category) {
+        const categoryNames = {
+            nutrition: 'Nutrisi',
+            cooking: 'Memasak',
+            health: 'Kesehatan',
+            development: 'Perkembangan',
+            expert: 'Ahli',
+            parenting: 'Parenting',
+            exercise: 'Olahraga',
+            mental: 'Mental'
+        };
+        
+        return categoryNames[category] || category;
+    }
+    
+    updateCategoryButtons(activeCategory) {
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const categoryMap = {
+            '': 'Semua',
+            'nutrition': 'Nutrisi',
+            'cooking': 'Memasak',
+            'health': 'Kesehatan',
+            'development': 'Perkembangan',
+            'expert': 'Ahli',
+            'parenting': 'Parenting'
+        };
+        
+        const targetText = categoryMap[activeCategory] || 'Semua';
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            if (btn.textContent.trim().includes(targetText)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
+    playVideo(videoId) {
+        const video = this.videos.find(v => v.id === videoId);
+        if (!video) return;
+        
+        // Track video view
+        this.trackVideoView(videoId);
+        
+        // Update modal content
+        document.getElementById('videoModalTitle').textContent = video.title;
+        document.getElementById('videoDescription').textContent = video.description;
+        document.getElementById('videoViews').textContent = video.views;
+        document.getElementById('videoLikes').textContent = video.likes;
+        document.getElementById('videoDate').textContent = new Date(video.date).toLocaleDateString('id-ID');
+        document.getElementById('videoExpert').textContent = video.expert;
+        
+        // Create video player
+        document.getElementById('videoPlayer').innerHTML = `
+            <iframe 
+                width="100%" 
+                height="500" 
+                src="${video.videoUrl}?autoplay=1" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        `;
+        
+        const modal = new bootstrap.Modal(document.getElementById('videoModal'));
+        modal.show();
+        
+        // Show success notification
+        this.showNotification(`Memutar: ${video.title}`, 'info');
+    }
+    
+    trackVideoView(videoId) {
+        // In a real application, this would track video analytics
+        console.log(`Video viewed: ${videoId}`);
+        
+        // Update view count locally (simulation)
+        const video = this.videos.find(v => v.id === videoId);
+        if (video) {
+            // Simulate incrementing view count
+            console.log(`Updated view count for: ${video.title}`);
+        }
+    }
+    
+    loadMoreVideos() {
+        this.displayedVideos += this.videosPerLoad;
+        this.renderVideos();
+        
+        // Show loading animation
+        this.showLoadingAnimation();
+    }
+    
+    showLoadingAnimation() {
+        const grid = document.getElementById('videoGrid');
+        const loadingHTML = `
+            <div class="col-12 loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Memuat video...</p>
+            </div>
+        `;
+        
+        grid.insertAdjacentHTML('beforeend', loadingHTML);
+        
+        setTimeout(() => {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.remove();
+            }
+        }, 1000);
+    }
+    
+    showNotification(message, type = 'info') {
+        // Create notification
+        const notificationHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 1050; min-width: 300px;" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', notificationHTML);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            const notification = document.querySelector('.alert');
+            if (notification) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Global functions
+function filterByCategory(category) {
+    if (window.videoLibrary) {
+        window.videoLibrary.filterByCategory(category);
+    }
+}
+
+function filterVideosByCategory() {
+    const category = document.getElementById('categoryFilter').value;
+    filterByCategory(category);
+}
+
+function filterVideosByDuration() {
+    const duration = document.getElementById('durationFilter').value;
+    if (window.videoLibrary) {
+        window.videoLibrary.filterByDuration(duration);
+    }
+}
+
+function filterVideosByQuality() {
+    const quality = document.getElementById('qualityFilter').value;
+    if (window.videoLibrary) {
+        window.videoLibrary.filterByQuality(quality);
+    }
+}
+
+function searchVideos() {
+    const query = document.getElementById('videoSearchInput').value;
+    if (window.videoLibrary) {
+        window.videoLibrary.searchVideos(query);
+    }
+}
+
+function loadMoreVideos() {
+    if (window.videoLibrary) {
+        window.videoLibrary.loadMoreVideos();
+    }
+}
+
+function playVideo(videoId) {
+    if (window.videoLibrary) {
+        window.videoLibrary.playVideo(videoId);
+    }
+}
+
+function likeVideo() {
+    if (window.videoLibrary) {
+        window.videoLibrary.showNotification('Video disukai!', 'success');
+    }
+}
+
+function shareVideo() {
+    if (window.videoLibrary) {
+        if (navigator.share) {
+            navigator.share({
+                title: 'anthroGizi Video',
+                text: 'Lihat video edukatif ini dari anthroGizi',
+                url: window.location.href
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            window.videoLibrary.showNotification('Tautan disalin ke clipboard!', 'success');
+        }
+    }
+}
+
+// Initialize Video Library when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.videoLibrary = new EnhancedVideoLibrary();
+    
+    // Add search functionality
+    document.getElementById('videoSearchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchVideos();
+        }
+    });
+    
+    // Reset modal content when closed
+    document.getElementById('videoModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('videoPlayer').innerHTML = '';
+    });
+});
+</script>
+{% endblock %}

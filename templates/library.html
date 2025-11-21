@@ -1,0 +1,855 @@
+{% extends "base.html" %}
+
+{% block title %}Perpustakaan Digital - anthroGizi v4.0.0{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="display-6 fw-bold text-gradient">Perpustakaan Digital</h1>
+                <p class="lead">Akses ribuan sumber daya gizi dan kesehatan anak dari website terpercaya</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Informasi:</strong> Perpustakaan ini mengarahkan Anda ke website-website terpercaya yang berisi artikel, jurnal, dan sumber daya edukatif tentang gizi dan kesehatan anak.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Selection -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-globe me-2"></i>
+                        Pilih Bahasa
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary lang-btn active" onclick="setLanguage('id')" id="lang-id">
+                            <i class="fas fa-flag me-1"></i> Bahasa Indonesia
+                        </button>
+                        <button type="button" class="btn btn-outline-primary lang-btn" onclick="setLanguage('en')" id="lang-en">
+                            <i class="fas fa-flag-usa me-1"></i> English
+                        </button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        Bahasa Indonesia: Untuk orang tua dan masyarakat umum<br>
+                        English: Untuk tenaga kesehatan dan referensi ilmiah
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Selection -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tags me-2"></i>
+                        Kategori Website
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="mpasi" onclick="filterByCategory('mpasi')">
+                                <div class="category-icon">
+                                    <i class="fas fa-utensils text-primary"></i>
+                                </div>
+                                <h6 class="category-title">MPASI & Nutrisi</h6>
+                                <p class="category-desc">Panduan MPASI, nutrisi anak, dan makanan sehat</p>
+                                <span class="category-count">15+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="health" onclick="filterByCategory('health')">
+                                <div class="category-icon">
+                                    <i class="fas fa-heartbeat text-success"></i>
+                                </div>
+                                <h6 class="category-title">Kesehatan Anak</h6>
+                                <p class="category-desc">Kesehatan umum, penyakit anak, dan perawatan</p>
+                                <span class="category-count">12+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="development" onclick="filterByCategory('development')">
+                                <div class="category-icon">
+                                    <i class="fas fa-child text-info"></i>
+                                </div>
+                                <h6 class="category-title">Tumbuh Kembang</h6>
+                                <p class="category-desc">Perkembangan motorik, kognitif, dan sosial</p>
+                                <span class="category-count">10+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="parenting" onclick="filterByCategory('parenting')">
+                                <div class="category-icon">
+                                    <i class="fas fa-users text-warning"></i>
+                                </div>
+                                <h6 class="category-title">Parenting</h6>
+                                <p class="category-desc">Pola asuh, psikologi anak, dan keluarga</p>
+                                <span class="category-count">8+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="research" onclick="filterByCategory('research')">
+                                <div class="category-icon">
+                                    <i class="fas fa-microscope text-danger"></i>
+                                </div>
+                                <h6 class="category-title">Riset & Jurnal</h6>
+                                <p class="category-desc">Penelitian ilmiah dan jurnal kedokteran</p>
+                                <span class="category-count">20+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="education" onclick="filterByCategory('education')">
+                                <div class="category-icon">
+                                    <i class="fas fa-graduation-cap text-secondary"></i>
+                                </div>
+                                <h6 class="category-title">Pendidikan Anak</h6>
+                                <p class="category-desc">Pendidikan dini dan stimulasi</p>
+                                <span class="category-count">7+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="exercise" onclick="filterByCategory('exercise')">
+                                <div class="category-icon">
+                                    <i class="fas fa-running text-primary"></i>
+                                </div>
+                                <h6 class="category-title">Aktivitas Fisik</h6>
+                                <p class="category-desc">Olahraga dan aktivitas fisik anak</p>
+                                <span class="category-count">5+ Website</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="category-card" data-category="mental" onclick="filterByCategory('mental')">
+                                <div class="category-icon">
+                                    <i class="fas fa-brain text-success"></i>
+                                </div>
+                                <h6 class="category-title">Kesehatan Mental</h6>
+                                <p class="category-desc">Kesehatan mental anak dan orang tua</p>
+                                <span class="category-count">6+ Website</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Websites -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="section-title mb-4">
+                <i class="fas fa-star text-warning me-2"></i>
+                Website Unggulan
+            </h3>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card featured-website h-100">
+                <div class="card-body">
+                    <div class="website-badge mb-3">
+                        <span class="badge bg-primary">MPASI & Nutrisi</span>
+                        <span class="badge bg-success ms-1">Official</span>
+                    </div>
+                    <h5 class="card-title">IDAI (Ikatan Dokter Anak Indonesia)</h5>
+                    <p class="card-text text-muted">
+                        Website resmi organisasi dokter spesialis anak Indonesia dengan ribuan artikel medis 
+                        dan panduan kesehatan anak yang terpercaya.
+                    </p>
+                    <div class="website-stats mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>100K+ Pengunjung/bulan
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-book me-1"></i>5000+ Artikel
+                        </small>
+                    </div>
+                    <button class="btn btn-outline-primary" onclick="openWebsite('https://www.idai.org')">
+                        <i class="fas fa-external-link-alt me-1"></i>Kunjungi Website
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card featured-website h-100">
+                <div class="card-body">
+                    <div class="website-badge mb-3">
+                        <span class="badge bg-info">Kesehatan Anak</span>
+                        <span class="badge bg-warning ms-1">Populer</span>
+                    </div>
+                    <h5 class="card-title">Halodoc</h5>
+                    <p class="card-text text-muted">
+                        Platform kesehatan digital terbesar di Indonesia dengan artikel medis, 
+                        konsultasi dokter, dan informasi kesehatan anak yang komprehensif.
+                    </p>
+                    <div class="website-stats mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>1M+ Pengunjung/bulan
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-user-md me-1"></i>Dokter Terverifikasi
+                        </small>
+                    </div>
+                    <button class="btn btn-outline-primary" onclick="openWebsite('https://www.halodoc.com')">
+                        <i class="fas fa-external-link-alt me-1"></i>Kunjungi Website
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card featured-website h-100">
+                <div class="card-body">
+                    <div class="website-badge mb-3">
+                        <span class="badge bg-success">Parenting</span>
+                        <span class="badge bg-info ms-1">Komunitas</span>
+                    </div>
+                    <h5 class="card-title">The Asian Parent</h5>
+                    <p class="card-text text-muted">
+                        Platform parenting terbesar di Asia dengan ribuan artikel, tips, 
+                        dan komunitas orang tua yang aktif dan suportif.
+                    </p>
+                    <div class="website-stats mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>500K+ Pengunjung/bulan
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-comments me-1"></i>Aktif Forum
+                        </small>
+                    </div>
+                    <button class="btn btn-outline-primary" onclick="openWebsite('https://id.theasianparent.com')">
+                        <i class="fas fa-external-link-alt me-1"></i>Kunjungi Website
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Website Directory -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Direktori Website
+                    </h5>
+                    <div class="search-container">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="websiteSearch" placeholder="Cari website..." onkeyup="searchWebsites()">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="websiteDirectory">
+                        <!-- Websites will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.category-card {
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+}
+
+.category-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.category-card.active {
+    border-color: var(--primary-color);
+    background-color: var(--primary-bg);
+}
+
+.category-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.category-title {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.category-desc {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.category-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.featured-website {
+    border-left: 4px solid var(--primary-color);
+    transition: transform 0.2s ease;
+}
+
+.featured-website:hover {
+    transform: translateY(-3px);
+}
+
+.website-badge .badge {
+    font-size: 0.75rem;
+}
+
+.website-stats {
+    font-size: 0.875rem;
+}
+
+.website-card {
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.website-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.website-logo {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.website-rating {
+    color: #ffc107;
+}
+
+.lang-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.section-title {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.search-container {
+    max-width: 300px;
+}
+</style>
+
+<script>
+// Enhanced Library System
+class EnhancedLibrarySystem {
+    constructor() {
+        this.currentLanguage = 'id';
+        this.currentCategory = 'all';
+        this.websites = this.initializeWebsites();
+        this.filteredWebsites = [...this.websites];
+        
+        this.renderWebsites();
+    }
+    
+    initializeWebsites() {
+        const indonesianWebsites = [
+            {
+                id: 'idai',
+                name: 'IDAI (Ikatan Dokter Anak Indonesia)',
+                url: 'https://www.idai.org',
+                category: 'health',
+                description: 'Website resmi organisasi dokter spesialis anak Indonesia dengan ribuan artikel medis',
+                logo: 'IDAI',
+                rating: 5,
+                visitors: '100K+/bulan',
+                articles: '5000+',
+                featured: true
+            },
+            {
+                id: 'halodoc',
+                name: 'Halodoc',
+                url: 'https://www.halodoc.com',
+                category: 'health',
+                description: 'Platform kesehatan digital terbesar dengan artikel medis dan konsultasi dokter',
+                logo: 'HD',
+                rating: 4.5,
+                visitors: '1M+/bulan',
+                articles: '10000+',
+                featured: true
+            },
+            {
+                id: 'asianparent-id',
+                name: 'The Asian Parent Indonesia',
+                url: 'https://id.theasianparent.com',
+                category: 'parenting',
+                description: 'Platform parenting terbesar di Asia dengan komunitas orang tua aktif',
+                logo: 'TAP',
+                rating: 4,
+                visitors: '500K+/bulan',
+                articles: '8000+',
+                featured: true
+            },
+            {
+                id: 'alodokter',
+                name: 'Alodokter',
+                url: 'https://www.alodokter.com',
+                category: 'health',
+                description: 'Platform kesehatan dengan artikel medis yang ditulis oleh dokter',
+                logo: 'AD',
+                rating: 4.5,
+                visitors: '800K+/bulan',
+                articles: '15000+'
+            },
+            {
+                id: 'sehatq',
+                name: 'SehatQ',
+                url: 'https://www.sehatq.com',
+                category: 'health',
+                description: 'Platform kesehatan lengkap dengan informasi medis terpercaya',
+                logo: 'SQ',
+                rating: 4,
+                visitors: '600K+/bulan',
+                articles: '12000+'
+            },
+            {
+                id: 'kompas-health',
+                name: 'Kompas.com - Health',
+                url: 'https://health.kompas.com',
+                category: 'health',
+                description: 'Berita kesehatan terkini dari media terpercaya Kompas',
+                logo: 'KH',
+                rating: 4,
+                visitors: '400K+/bulan',
+                articles: '3000+'
+            },
+            {
+                id: 'detik-health',
+                name: 'Detik.com - Health',
+                url: 'https://health.detik.com',
+                category: 'health',
+                description: 'Berita kesehatan terupdate dari portal berita Detik',
+                logo: 'DH',
+                rating: 4,
+                visitors: '350K+/bulan',
+                articles: '2500+'
+            },
+            {
+                id: 'parenting-co-id',
+                name: 'Parenting.co.id',
+                url: 'https://parenting.co.id',
+                category: 'parenting',
+                description: 'Portal parenting dengan tips dan artikel untuk orang tua',
+                logo: 'PCID',
+                rating: 4,
+                visitors: '200K+/bulan',
+                articles: '5000+'
+            },
+            {
+                id: 'mombaby',
+                name: 'Mom & Baby',
+                url: 'https://www.mombaby.com',
+                category: 'parenting',
+                description: 'Portal untuk ibu dan bayi dengan tips perawatan',
+                logo: 'MB',
+                rating: 4,
+                visitors: '150K+/bulan',
+                articles: '4000+'
+            },
+            {
+                id: 'kumparan-parenting',
+                name: 'Kumparan - Parenting',
+                url: 'https://kumparan.com/topic/parenting',
+                category: 'parenting',
+                description: 'Berita dan artikel parenting dari platform Kumparan',
+                logo: 'KP',
+                rating: 3.5,
+                visitors: '300K+/bulan',
+                articles: '2000+'
+            },
+            {
+                id: 'gridhealth',
+                name: 'GridHealth',
+                url: 'https://health.grid.id',
+                category: 'health',
+                description: 'Portal kesehatan dengan informasi medis terkini',
+                logo: 'GH',
+                rating: 4,
+                visitors: '250K+/bulan',
+                articles: '3500+'
+            },
+            {
+                id: 'popmama',
+                name: 'Popmama.com',
+                url: 'https://www.popmama.com',
+                category: 'parenting',
+                description: 'Platform untuk ibu modern dengan tips parenting',
+                logo: 'PM',
+                rating: 4,
+                visitors: '180K+/bulan',
+                articles: '6000+'
+            },
+            {
+                id: 'bpk-kemenkes',
+                name: 'Badan Penelitian dan Pengembangan Kesehatan',
+                url: 'https://bpk.kemkes.go.id',
+                category: 'research',
+                description: 'Website resmi Kemenkes dengan hasil penelitian kesehatan',
+                logo: 'BPK',
+                rating: 5,
+                visitors: '50K+/bulan',
+                articles: '1000+'
+            },
+            {
+                id: 'lipi',
+                name: 'LIPI (Lembaga Ilmu Pengetahuan Indonesia)',
+                url: 'https://www.lipi.go.id',
+                category: 'research',
+                description: 'Website resmi lembaga penelitian ilmiah Indonesia',
+                logo: 'LIPI',
+                rating: 5,
+                visitors: '30K+/bulan',
+                articles: '800+'
+            },
+            {
+                id: 'ui-fk',
+                name: 'Fakultas Kedokteran UI',
+                url: 'https://www.fk.ui.ac.id',
+                category: 'research',
+                description: 'Website fakultas kedokteran Universitas Indonesia',
+                logo: 'FKUI',
+                rating: 5,
+                visitors: '40K+/bulan',
+                articles: '1200+'
+            }
+        ];
+        
+        const englishWebsites = [
+            {
+                id: 'who',
+                name: 'World Health Organization (WHO)',
+                url: 'https://www.who.int',
+                category: 'health',
+                description: 'Global authority on public health and medical standards',
+                logo: 'WHO',
+                rating: 5,
+                visitors: '10M+/month',
+                articles: '50000+',
+                featured: true
+            },
+            {
+                id: 'cdc',
+                name: 'Centers for Disease Control and Prevention (CDC)',
+                url: 'https://www.cdc.gov',
+                category: 'health',
+                description: 'America\'s health protection agency with comprehensive health information',
+                logo: 'CDC',
+                rating: 5,
+                visitors: '8M+/month',
+                articles: '30000+',
+                featured: true
+            },
+            {
+                id: 'pubmed',
+                name: 'PubMed',
+                url: 'https://pubmed.ncbi.nlm.nih.gov',
+                category: 'research',
+                description: 'Database of biomedical and life sciences journal articles',
+                logo: 'PUB',
+                rating: 5,
+                visitors: '5M+/month',
+                articles: '30000000+'
+            },
+            {
+                id: 'springer',
+                name: 'Springer Nature',
+                url: 'https://www.springer.com',
+                category: 'research',
+                description: 'Leading global publisher of scientific, technical and medical research',
+                logo: 'SPR',
+                rating: 5,
+                visitors: '2M+/month',
+                articles: '1000000+'
+            },
+            {
+                id: 'elsevier',
+                name: 'Elsevier',
+                url: 'https://www.elsevier.com',
+                category: 'research',
+                description: 'Information analytics business specializing in science and health',
+                logo: 'ELS',
+                rating: 5,
+                visitors: '3M+/month',
+                articles: '2500000+'
+            },
+            {
+                id: 'aap',
+                name: 'American Academy of Pediatrics',
+                url: 'https://www.aap.org',
+                category: 'health',
+                description: 'Professional association of pediatricians in the United States',
+                logo: 'AAP',
+                rating: 5,
+                visitors: '1M+/month',
+                articles: '15000+'
+            },
+            {
+                id: 'healthychildren',
+                name: 'HealthyChildren.org',
+                url: 'https://www.healthychildren.org',
+                category: 'parenting',
+                description: 'Pediatrician-backed health information for children',
+                logo: 'HC',
+                rating: 5,
+                visitors: '2M+/month',
+                articles: '10000+'
+            },
+            {
+                id: 'babycenter',
+                name: 'BabyCenter',
+                url: 'https://www.babycenter.com',
+                category: 'parenting',
+                description: 'Comprehensive pregnancy and parenting information',
+                logo: 'BC',
+                rating: 4.5,
+                visitors: '4M+/month',
+                articles: '20000+'
+            },
+            {
+                id: 'whattoexpect',
+                name: 'What to Expect',
+                url: 'https://www.whattoexpect.com',
+                category: 'parenting',
+                description: 'Pregnancy and parenting guide with expert advice',
+                logo: 'WTE',
+                rating: 4.5,
+                visitors: '3M+/month',
+                articles: '15000+'
+            },
+            {
+                id: 'parents',
+                name: 'Parents.com',
+                url: 'https://www.parents.com',
+                category: 'parenting',
+                description: 'Trusted parenting advice and information since 1926',
+                logo: 'PAR',
+                rating: 4.5,
+                visitors: '5M+/month',
+                articles: '25000+'
+            }
+        ];
+        
+        return this.currentLanguage === 'id' ? indonesianWebsites : englishWebsites;
+    }
+    
+    setLanguage(lang) {
+        this.currentLanguage = lang;
+        
+        // Update button states
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(`lang-${lang}`).classList.add('active');
+        
+        // Update websites
+        this.websites = this.initializeWebsites();
+        this.filterByCategory(this.currentCategory);
+    }
+    
+    filterByCategory(category) {
+        this.currentCategory = category;
+        
+        // Update category cards
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        
+        if (category !== 'all') {
+            const activeCard = document.querySelector(`[data-category="${category}"]`);
+            if (activeCard) {
+                activeCard.classList.add('active');
+            }
+        }
+        
+        // Filter websites
+        if (category === 'all') {
+            this.filteredWebsites = [...this.websites];
+        } else {
+            this.filteredWebsites = this.websites.filter(website => 
+                website.category === category
+            );
+        }
+        
+        this.renderWebsites();
+    }
+    
+    searchWebsites() {
+        const searchTerm = document.getElementById('websiteSearch').value.toLowerCase();
+        
+        if (searchTerm === '') {
+            this.filterByCategory(this.currentCategory);
+            return;
+        }
+        
+        this.filteredWebsites = this.websites.filter(website => {
+            return website.name.toLowerCase().includes(searchTerm) ||
+                   website.description.toLowerCase().includes(searchTerm) ||
+                   website.category.toLowerCase().includes(searchTerm);
+        });
+        
+        this.renderWebsites();
+    }
+    
+    renderWebsites() {
+        const directory = document.getElementById('websiteDirectory');
+        directory.innerHTML = '';
+        
+        this.filteredWebsites.forEach(website => {
+            const websiteCard = this.createWebsiteCard(website);
+            directory.appendChild(websiteCard);
+        });
+    }
+    
+    createWebsiteCard(website) {
+        const col = document.createElement('div');
+        col.className = 'col-lg-4 col-md-6 mb-4';
+        
+        const stars = '★'.repeat(Math.floor(website.rating)) + '☆'.repeat(5 - Math.floor(website.rating));
+        
+        col.innerHTML = `
+            <div class="card website-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="website-logo me-3">
+                            ${website.logo}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">${website.name}</h6>
+                            <div class="website-rating mb-2">${stars} ${website.rating}</div>
+                            <span class="badge bg-primary">${this.getCategoryName(website.category)}</span>
+                        </div>
+                    </div>
+                    
+                    <p class="card-text text-muted small mb-3">${website.description}</p>
+                    
+                    <div class="website-stats mb-3">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Pengunjung</small>
+                                <strong>${website.visitors}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Artikel</small>
+                                <strong>${website.articles}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-sm" onclick="openWebsite('${website.url}')">
+                            <i class="fas fa-external-link-alt me-1"></i>Kunjungi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return col;
+    }
+    
+    getCategoryName(category) {
+        const categoryNames = {
+            id: {
+                mpasi: 'MPASI & Nutrisi',
+                health: 'Kesehatan Anak',
+                development: 'Tumbuh Kembang',
+                parenting: 'Parenting',
+                research: 'Riset & Jurnal',
+                education: 'Pendidikan Anak',
+                exercise: 'Aktivitas Fisik',
+                mental: 'Kesehatan Mental'
+            },
+            en: {
+                mpasi: 'Complementary Feeding & Nutrition',
+                health: 'Child Health',
+                development: 'Growth & Development',
+                parenting: 'Parenting',
+                research: 'Research & Journals',
+                education: 'Child Education',
+                exercise: 'Physical Activity',
+                mental: 'Mental Health'
+            }
+        };
+        
+        return categoryNames[this.currentLanguage][category] || category;
+    }
+}
+
+// Global functions
+function setLanguage(lang) {
+    if (window.librarySystem) {
+        window.librarySystem.setLanguage(lang);
+    }
+}
+
+function filterByCategory(category) {
+    if (window.librarySystem) {
+        window.librarySystem.filterByCategory(category);
+    }
+}
+
+function searchWebsites() {
+    if (window.librarySystem) {
+        window.librarySystem.searchWebsites();
+    }
+}
+
+function openWebsite(url) {
+    // Open website in new tab
+    window.open(url, '_blank');
+}
+
+// Initialize library system when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.librarySystem = new EnhancedLibrarySystem();
+});
+</script>
+{% endblock %}

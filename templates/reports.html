@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Pertumbuhan - anthroGizi v4.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: #1f2937;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Crimson Text', serif;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .timeline-item {
+            border-left: 3px solid var(--primary-color);
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .timeline-date {
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .interpretation-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-normal { background-color: #d1fae5; color: #065f46; }
+        .badge-risk { background-color: #fef3c7; color: #92400e; }
+        .badge-concerning { background-color: #fee2e2; color: #991b1b; }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .data-table {
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            border: none;
+        }
+
+        .data-table td {
+            vertical-align: middle;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body data-theme="default">
+    <!-- Theme Switch -->
+    <div class="theme-switch">
+        <button class="theme-btn" onclick="toggleTheme()">
+            <i class="fas fa-palette"></i>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold mb-3">
+                        <i class="fas fa-chart-line me-3"></i>
+                        Laporan Pertumbuhan Anak
+                    </h1>
+                    <p class="lead mb-0">
+                        Analisis komprehensif perkembangan anak berdasarkan standar WHO dan data historis
+                    </p>
+                </div>
+                <div class="col-lg-4 text-end">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button class="export-btn" onclick="exportToPDF()">
+                            <i class="fas fa-file-pdf me-2"></i>PDF
+                        </button>
+                        <button class="export-btn" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel me-2"></i>Excel
+                        </button>
+                        <button class="export-btn" onclick="exportToCSV()">
+                            <i class="fas fa-file-csv me-2"></i>CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Nama Anak</label>
+                    <select class="form-select" id="childSelect">
+                        <option value="">Pilih Anak</option>
+                        <option value="child1">Ahmad (Laki-laki, 24 bulan)</option>
+                        <option value="child2">Siti (Perempuan, 18 bulan)</option>
+                        <option value="child3">Budi (Laki-laki, 36 bulan)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Rentang Waktu</label>
+                    <select class="form-select" id="timeRange">
+                        <option value="3">3 Bulan Terakhir</option>
+                        <option value="6">6 Bulan Terakhir</option>
+                        <option value="12">1 Tahun Terakhir</option>
+                        <option value="all">Semua Data</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Jenis Grafik</label>
+                    <select class="form-select" id="chartType">
+                        <option value="weight">Berat Badan</option>
+                        <option value="height">Tinggi Badan</option>
+                        <option value="bmi">BMI</option>
+                        <option value="head">Lingkar Kepala</option>
+                        <option value="all">Semua Parameter</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="export-btn" onclick="generateReport()">
+                        <i class="fas fa-sync-alt me-2"></i>Generate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Memproses data...</p>
+        </div>
+
+        <!-- Metrics Overview -->
+        <div class="row mb-4" id="metricsSection" style="display: none;">
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="metric-value" id="currentWeight">12.5</div>
+                    <div class="metric-label">Berat Saat Ini (kg)</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="metric-value" id="currentHeight">85.2</div>
+                    <div class="metric-label">Tinggi Saat Ini (cm)</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="metric-value" id="currentBMI">17.2</div>
+                    <div class="metric-label">BMI Saat Ini</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="metric-value" id="weightVelocity">0.18</div>
+                    <div class="metric-label">Kecepatan Pertumbuhan (kg/bulan)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mb-4" id="chartsSection" style="display: none;">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="fas fa-chart-area me-2"></i>
+                            Grafik Pertumbuhan
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Interpretasi
+                        </h3>
+                        <div id="interpretationContent">
+                            <div class="mb-3">
+                                <strong>Status Gizi:</strong>
+                                <span class="interpretation-badge badge-normal">Normal</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Tren Pertumbuhan:</strong>
+                                <span class="text-success">
+                                    <i class="fas fa-arrow-up me-1"></i>
+                                    Stabil
+                                </span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Perkiraan Usia 5 Tahun:</strong>
+                                <div class="text-muted">Berat: 18.5 kg, Tinggi: 110 cm</div>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Rekomendasi:</strong>
+                                <p class="mb-0 mt-2">
+                                    Pertumbuhan anak dalam kategori normal. 
+                                    Terus pantau asupan gizi dan aktivitas fisik.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth Velocity Analysis -->
+        <div class="row mb-4" id="velocitySection" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Analisis Kecepatan Pertumbuhan
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container" style="height: 300px;">
+                                    <canvas id="velocityChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-date">3 bulan lalu</div>
+                                        <div class="timeline-content">
+                                            <strong>Percepatan Pertumbuhan</strong><br>
+                                            <small class="text-muted">Berat meningkat 0.5 kg/bulan</small>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-date">2 bulan lalu</div>
+                                        <div class="timeline-content">
+                                            <strong>Pertumbuhan Stabil</strong><br>
+                                            <small class="text-muted">Berat meningkat 0.3 kg/bulan</small>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-date">Bulan ini</div>
+                                        <div class="timeline-content">
+                                            <strong>Pertumbuhan Optimal</strong><br>
+                                            <small class="text-muted">Berat meningkat 0.4 kg/bulan</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="row mb-4" id="tableSection" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="fas fa-table me-2"></i>
+                            Data Historis
+                        </h3>
+                        <div class="table-responsive">
+                            <table class="table table-hover data-table" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Usia (bulan)</th>
+                                        <th>Berat (kg)</th>
+                                        <th>Tinggi (cm)</th>
+                                        <th>BMI</th>
+                                        <th>Z-Score Berat</th>
+                                        <th>Z-Score Tinggi</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTableBody">
+                                    <!-- Data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme Management
+        const themes = {
+            default: {
+                primary: '#4f46e5',
+                secondary: '#06b6d4',
+                success: '#10b981',
+                light: '#f8fafc'
+            },
+            pastel: {
+                primary: '#818cf8',
+                secondary: '#67e8f9',
+                success: '#6ee7b7',
+                light: '#f0f9ff'
+            },
+            warm: {
+                primary: '#fb7185',
+                secondary: '#fcd34d',
+                success: '#4ade80',
+                light: '#fef7ed'
+            }
+        };
+
+        let currentTheme = 'default';
+
+        function toggleTheme() {
+            const themeKeys = Object.keys(themes);
+            const currentIndex = themeKeys.indexOf(currentTheme);
+            currentTheme = themeKeys[(currentIndex + 1) % themeKeys.length];
+            
+            const theme = themes[currentTheme];
+            document.documentElement.style.setProperty('--primary-color', theme.primary);
+            document.documentElement.style.setProperty('--secondary-color', theme.secondary);
+            document.documentElement.style.setProperty('--success-color', theme.success);
+            document.documentElement.style.setProperty('--light-bg', theme.light);
+            
+            // Update charts if they exist
+            if (window.growthChart) window.growthChart.update();
+            if (window.velocityChart) window.velocityChart.update();
+        }
+
+        // Mock data for demonstration
+        const mockData = {
+            child1: {
+                name: 'Ahmad',
+                gender: 'L',
+                data: [
+                    { date: '2024-08-15', age: 21, weight: 11.2, height: 82.1, bmi: 16.6, waz: -0.5, haz: -0.2 },
+                    { date: '2024-09-15', age: 22, weight: 11.5, height: 83.2, bmi: 16.6, waz: -0.4, haz: -0.1 },
+                    { date: '2024-10-15', age: 23, weight: 11.8, height: 84.0, bmi: 16.7, waz: -0.3, haz: 0.0 },
+                    { date: '2024-11-15', age: 24, weight: 12.1, height: 85.2, bmi: 16.7, waz: -0.2, haz: 0.1 }
+                ]
+            },
+            child2: {
+                name: 'Siti',
+                gender: 'P',
+                data: [
+                    { date: '2024-08-15', age: 15, weight: 9.8, height: 76.5, bmi: 16.8, waz: -0.3, haz: 0.1 },
+                    { date: '2024-09-15', age: 16, weight: 10.1, height: 77.8, bmi: 16.7, waz: -0.2, haz: 0.2 },
+                    { date: '2024-10-15', age: 17, weight: 10.4, height: 79.1, bmi: 16.6, waz: -0.1, haz: 0.3 },
+                    { date: '2024-11-15', age: 18, weight: 10.7, height: 80.5, bmi: 16.5, waz: 0.0, haz: 0.4 }
+                ]
+            }
+        };
+
+        let currentChart = null;
+        let velocityChart = null;
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('metricsSection').style.display = 'none';
+            document.getElementById('chartsSection').style.display = 'none';
+            document.getElementById('velocitySection').style.display = 'none';
+            document.getElementById('tableSection').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('metricsSection').style.display = 'flex';
+            document.getElementById('chartsSection').style.display = 'flex';
+            document.getElementById('velocitySection').style.display = 'flex';
+            document.getElementById('tableSection').style.display = 'flex';
+        }
+
+        function generateReport() {
+            const childId = document.getElementById('childSelect').value;
+            const timeRange = document.getElementById('timeRange').value;
+            const chartType = document.getElementById('chartType').value;
+
+            if (!childId) {
+                alert('Silakan pilih anak terlebih dahulu');
+                return;
+            }
+
+            showLoading();
+
+            setTimeout(() => {
+                const data = mockData[childId];
+                populateMetrics(data);
+                createGrowthChart(data, chartType);
+                createVelocityChart(data);
+                populateTable(data);
+                hideLoading();
+            }, 1500);
+        }
+
+        function populateMetrics(data) {
+            const latest = data.data[data.data.length - 1];
+            document.getElementById('currentWeight').textContent = latest.weight;
+            document.getElementById('currentHeight').textContent = latest.height;
+            document.getElementById('currentBMI').textContent = latest.bmi;
+            
+            // Calculate velocity
+            if (data.data.length >= 2) {
+                const previous = data.data[data.data.length - 2];
+                const velocity = ((latest.weight - previous.weight) / 1).toFixed(2);
+                document.getElementById('weightVelocity').textContent = velocity;
+            }
+        }
+
+        function createGrowthChart(data, chartType) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            if (window.growthChart) {
+                window.growthChart.destroy();
+            }
+
+            const labels = data.data.map(d => new Date(d.date).toLocaleDateString('id-ID'));
+            
+            let datasets = [];
+            
+            if (chartType === 'weight' || chartType === 'all') {
+                datasets.push({
+                    label: 'Berat Badan (kg)',
+                    data: data.data.map(d => d.weight),
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4
+                });
+            }
+            
+            if (chartType === 'height' || chartType === 'all') {
+                datasets.push({
+                    label: 'Tinggi Badan (cm)',
+                    data: data.data.map(d => d.height),
+                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                    tension: 0.4
+                });
+            }
+            
+            if (chartType === 'bmi' || chartType === 'all') {
+                datasets.push({
+                    label: 'BMI',
+                    data: data.data.map(d => d.bmi),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4
+                });
+            }
+
+            window.growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Grafik Pertumbuhan Anak'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createVelocityChart(data) {
+            const ctx = document.getElementById('velocityChart').getContext('2d');
+            
+            if (window.velocityChart) {
+                window.velocityChart.destroy();
+            }
+
+            const labels = data.data.slice(1).map(d => new Date(d.date).toLocaleDateString('id-ID'));
+            const velocities = [];
+            
+            for (let i = 1; i < data.data.length; i++) {
+                const velocity = data.data[i].weight - data.data[i-1].weight;
+                velocities.push(velocity.toFixed(2));
+            }
+
+            window.velocityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Kecepatan Pertambahan Berat (kg/bulan)',
+                        data: velocities,
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: '#4f46e5',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function populateTable(data) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+
+            data.data.forEach(row => {
+                const tr = document.createElement('tr');
+                const status = row.waz > -2 ? (row.waz > -1 ? 'Normal' : 'Risiko') : 'Gizi Buruk';
+                const statusClass = row.waz > -2 ? (row.waz > -1 ? 'badge-normal' : 'badge-risk') : 'badge-concerning';
+                
+                tr.innerHTML = `
+                    <td>${new Date(row.date).toLocaleDateString('id-ID')}</td>
+                    <td>${row.age}</td>
+                    <td>${row.weight}</td>
+                    <td>${row.height}</td>
+                    <td>${row.bmi}</td>
+                    <td>${row.waz}</td>
+                    <td>${row.haz}</td>
+                    <td><span class="interpretation-badge ${statusClass}">${status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.text('Laporan Pertumbuhan Anak', 20, 20);
+            doc.text('Generated by anthroGizi v4.0', 20, 30);
+            
+            // Add table data
+            const childId = document.getElementById('childSelect').value;
+            const data = mockData[childId];
+            
+            let yPosition = 50;
+            doc.text('Data Historis:', 20, yPosition);
+            yPosition += 10;
+            
+            data.data.forEach(row => {
+                doc.text(`${new Date(row.date).toLocaleDateString('id-ID')} - Berat: ${row.weight}kg, Tinggi: ${row.height}cm`, 20, yPosition);
+                yPosition += 10;
+            });
+            
+            doc.save('laporan-pertumbuhan.pdf');
+        }
+
+        function exportToExcel() {
+            const childId = document.getElementById('childSelect').value;
+            const data = mockData[childId];
+            
+            const worksheet = XLSX.utils.json_to_sheet(data.data.map(row => ({
+                'Tanggal': new Date(row.date).toLocaleDateString('id-ID'),
+                'Usia (bulan)': row.age,
+                'Berat (kg)': row.weight,
+                'Tinggi (cm)': row.height,
+                'BMI': row.bmi,
+                'Z-Score Berat': row.waz,
+                'Z-Score Tinggi': row.haz
+            })));
+            
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Pertumbuhan');
+            
+            XLSX.writeFile(workbook, 'laporan-pertumbuhan.xlsx');
+        }
+
+        function exportToCSV() {
+            const childId = document.getElementById('childSelect').value;
+            const data = mockData[childId];
+            
+            let csvContent = 'Tanggal,Usia (bulan),Berat (kg),Tinggi (cm),BMI,Z-Score Berat,Z-Score Tinggi\n';
+            
+            data.data.forEach(row => {
+                csvContent += `${new Date(row.date).toLocaleDateString('id-ID')},${row.age},${row.weight},${row.height},${row.bmi},${row.waz},${row.haz}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'laporan-pertumbuhan.csv';
+            link.click();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default values
+            document.getElementById('timeRange').value = '3';
+            document.getElementById('chartType').value = 'all';
+        });
+    </script>
+</body>
+</html>

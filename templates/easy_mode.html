@@ -1,0 +1,658 @@
+{% extends "base.html" %}
+
+{% block title %}Mode Mudah - anthroGizi v4.0.0{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header text-center">
+                <h1 class="display-6 fw-bold text-gradient">Mode Mudah</h1>
+                <p class="lead">Cek cepat rentang normal berat dan tinggi anak sesuai usia</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Mode Mudah:</strong> Hanya memerlukan input usia anak untuk menampilkan rentang normal 
+                    berat badan dan tinggi badan sesuai standar WHO. Cocok untuk cek cepat dan pemantauan rutin.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Form -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calculator me-2"></i>
+                        Input Data Anak
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="easyModeForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Usia Anak (bulan)</label>
+                                <input type="number" class="form-control" id="childAge" 
+                                       min="0" max="60" required placeholder="Contoh: 18">
+                                <small class="text-muted">Masukkan usia dalam bulan (0-60 bulan)</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Jenis Kelamin</label>
+                                <select class="form-select" id="childGender" required>
+                                    <option value="">Pilih Gender</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="calculateEasyMode()">
+                                <i class="fas fa-search me-2"></i>Cek Rentang Normal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="row" id="resultsSection" style="display: none;">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Hasil Rentang Normal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="easyModeResults">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mt-5" id="chartsSection" style="display: none;">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-weight me-2"></i>
+                        Rentang Berat Badan Normal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="weightChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-ruler-vertical me-2"></i>
+                        Rentang Tinggi Badan Normal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="heightChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interpretation Section -->
+    <div class="row mt-4" id="interpretationSection" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-gradient-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Interpretasi Hasil
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="interpretationContent">
+                        <!-- Interpretation will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="section-title text-center mb-4">
+                <i class="fas fa-star text-warning me-2"></i>
+                Tips untuk Orang Tua
+            </h3>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-balance-scale text-primary fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Pengukuran yang Tepat</h5>
+                    <p class="card-text text-muted">
+                        Gunakan timbangan digital yang terkalibrasi dan alas pengukur yang datar untuk hasil yang akurat.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-clock text-info fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Waktu yang Ideal</h5>
+                    <p class="card-text text-muted">
+                        Lakukan pengukuran pada pagi hari sebelum makan untuk hasil yang konsisten dan akurat.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-calendar-check text-success fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Pemantauan Rutin</h5>
+                    <p class="card-text text-muted">
+                        Lakukan pengukuran secara rutin sesuai jadwal KMS untuk monitoring pertumbuhan yang optimal.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.easy-mode-card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.result-card {
+    border-left: 4px solid var(--success-color);
+    transition: transform 0.2s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+}
+
+.range-display {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.range-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.range-item:hover {
+    border-color: var(--primary-color);
+    background-color: var(--light-bg);
+}
+
+.range-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.chart-container {
+    min-height: 300px;
+    position: relative;
+}
+
+.interpretation-item {
+    padding: 1rem;
+    border-left: 4px solid var(--primary-color);
+    background: var(--light-bg);
+    margin-bottom: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.section-title {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-spinner.show {
+    display: block;
+}
+</style>
+
+<script>
+// Enhanced Easy Mode System
+class EnhancedEasyMode {
+    constructor() {
+        this.whoReferenceData = this.initializeWHOData();
+        this.currentResults = null;
+    }
+    
+    initializeWHOData() {
+        // WHO reference data for weight and height by age and gender
+        return {
+            weight: {
+                L: {
+                    6: { min: 6.5, max: 9.5, p50: 7.8 },
+                    12: { min: 8.5, max: 12.5, p50: 10.2 },
+                    18: { min: 9.8, max: 14.2, p50: 11.8 },
+                    24: { min: 11.0, max: 16.0, p50: 13.2 },
+                    30: { min: 12.0, max: 17.5, p50: 14.5 },
+                    36: { min: 12.8, max: 18.8, p50: 15.6 },
+                    42: { min: 13.5, max: 19.8, p50: 16.5 },
+                    48: { min: 14.2, max: 20.8, p50: 17.4 },
+                    54: { min: 14.8, max: 21.8, p50: 18.2 },
+                    60: { min: 15.5, max: 22.8, p50: 19.0 }
+                },
+                P: {
+                    6: { min: 5.8, max: 8.8, p50: 7.2 },
+                    12: { min: 7.8, max: 11.8, p50: 9.5 },
+                    18: { min: 9.2, max: 13.5, p50: 11.0 },
+                    24: { min: 10.2, max: 15.2, p50: 12.4 },
+                    30: { min: 11.2, max: 16.8, p50: 13.8 },
+                    36: { min: 12.0, max: 18.0, p50: 14.8 },
+                    42: { min: 12.8, max: 19.2, p50: 15.8 },
+                    48: { min: 13.5, max: 20.2, p50: 16.6 },
+                    54: { min: 14.2, max: 21.2, p50: 17.4 },
+                    60: { min: 14.8, max: 22.0, p50: 18.2 }
+                }
+            },
+            height: {
+                L: {
+                    6: { min: 63, max: 73, p50: 67 },
+                    12: { min: 73, max: 83, p50: 76 },
+                    18: { min: 78, max: 88, p50: 82 },
+                    24: { min: 83, max: 93, p50: 87 },
+                    30: { min: 87, max: 97, p50: 91 },
+                    36: { min: 90, max: 100, p50: 94 },
+                    42: { min: 93, max: 103, p50: 97 },
+                    48: { min: 95, max: 105, p50: 99 },
+                    54: { min: 97, max: 107, p50: 101 },
+                    60: { min: 99, max: 109, p50: 103 }
+                },
+                P: {
+                    6: { min: 61, max: 71, p50: 65 },
+                    12: { min: 71, max: 81, p50: 74 },
+                    18: { min: 76, max: 86, p50: 80 },
+                    24: { min: 81, max: 91, p50: 85 },
+                    30: { min: 85, max: 95, p50: 89 },
+                    36: { min: 88, max: 98, p50: 92 },
+                    42: { min: 91, max: 101, p50: 95 },
+                    48: { min: 93, max: 103, p50: 97 },
+                    54: { min: 95, max: 105, p50: 99 },
+                    60: { min: 97, max: 107, p50: 101 }
+                }
+            }
+        };
+    }
+    
+    calculateEasyMode() {
+        // Validate form
+        const age = parseInt(document.getElementById('childAge').value);
+        const gender = document.getElementById('childGender').value;
+        
+        if (!age || age < 0 || age > 60) {
+            this.showNotification('Harap masukkan usia yang valid (0-60 bulan)', 'warning');
+            return;
+        }
+        
+        if (!gender) {
+            this.showNotification('Harap pilih jenis kelamin anak', 'warning');
+            return;
+        }
+        
+        // Show loading
+        this.showLoading();
+        
+        // Calculate age in years and months
+        const years = Math.floor(age / 12);
+        const months = age % 12;
+        
+        // Get reference data
+        const weightRange = this.getReferenceRange(age, gender, 'weight');
+        const heightRange = this.getReferenceRange(age, gender, 'height');
+        
+        // Calculate age in days
+        const ageInDays = Math.round(age * 30.44);
+        
+        // Create results object
+        const results = {
+            age: age,
+            ageInDays: ageInDays,
+            years: years,
+            months: months,
+            gender: gender,
+            weightRange: weightRange,
+            heightRange: heightRange,
+            interpretation: this.generateInterpretation(weightRange, heightRange, age)
+        };
+        
+        this.currentResults = results;
+        
+        // Display results after short delay for loading effect
+        setTimeout(() => {
+            this.displayResults(results);
+            this.displayCharts(results);
+            this.displayInterpretation(results);
+            this.hideLoading();
+            
+            // Show success notification
+            this.showNotification('Perhitungan berhasil dilakukan!', 'success');
+        }, 1000);
+    }
+    
+    getReferenceRange(age, gender, type) {
+        const data = this.whoReferenceData[type][gender];
+        
+        // Find closest age in reference data
+        const ages = Object.keys(data).map(Number).sort((a, b) => a - b);
+        let closestAge = ages[0];
+        
+        for (let refAge of ages) {
+            if (age >= refAge) {
+                closestAge = refAge;
+            } else {
+                break;
+            }
+        }
+        
+        return data[closestAge] || { min: 0, max: 0, p50: 0 };
+    }
+    
+    generateInterpretation(weightRange, heightRange, age) {
+        const interpretations = {
+            weight: {
+                normal: 'Berat badan anak dalam rentang normal sesuai usia',
+                underweight: 'Berat badan anak berada di bawah rentang normal',
+                overweight: 'Berat badan anak berada di atas rentang normal'
+            },
+            height: {
+                normal: 'Tinggi badan anak dalam rentang normal sesuai usia',
+                short: 'Tinggi badan anak berada di bawah rentang normal',
+                tall: 'Tinggi badan anak berada di atas rentang normal'
+            }
+        };
+        
+        return interpretations;
+    }
+    
+    displayResults(results) {
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsContainer = document.getElementById('easyModeResults');
+        
+        // Show results section
+        resultsSection.style.display = 'block';
+        
+        // Generate results HTML
+        let resultsHTML = `
+            <div class="range-display mb-4">
+                <h4 class="mb-3">Hasil untuk Anak ${results.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</h4>
+                <h2 class="mb-2">${results.years} Tahun ${results.months} Bulan</h2>
+                <p class="mb-0">(${results.ageInDays} hari)</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-weight me-2"></i>
+                        Rentang Berat Badan Normal
+                    </h5>
+                    <div class="range-item">
+                        <span>Berat Minimum:</span>
+                        <span class="range-value">${results.weightRange.min} kg</span>
+                    </div>
+                    <div class="range-item">
+                        <span>Berat Maksimum:</span>
+                        <span class="range-value">${results.weightRange.max} kg</span>
+                    </div>
+                    <div class="range-item">
+                        <span>Berat Rata-rata (P50):</span>
+                        <span class="range-value">${results.weightRange.p50} kg</span>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="text-info mb-3">
+                        <i class="fas fa-ruler-vertical me-2"></i>
+                        Rentang Tinggi Badan Normal
+                    </h5>
+                    <div class="range-item">
+                        <span>Tinggi Minimum:</span>
+                        <span class="range-value">${results.heightRange.min} cm</span>
+                    </div>
+                    <div class="range-item">
+                        <span>Tinggi Maksimum:</span>
+                        <span class="range-value">${results.heightRange.max} cm</span>
+                    </div>
+                    <div class="range-item">
+                        <span>Tinggi Rata-rata (P50):</span>
+                        <span class="range-value">${results.heightRange.p50} cm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Catatan:</strong> Nilai di atas merupakan rentang normal berdasarkan standar WHO 2006. 
+                    Konsultasikan dengan tenaga kesehatan jika ada kekhawatiran.
+                </div>
+            </div>
+        `;
+        
+        resultsContainer.innerHTML = resultsHTML;
+    }
+    
+    displayCharts(results) {
+        const chartsSection = document.getElementById('chartsSection');
+        chartsSection.style.display = 'block';
+        
+        // Create weight chart
+        this.createChart('weightChart', 'Berat Badan (kg)', results.weightRange, results.age);
+        
+        // Create height chart
+        this.createChart('heightChart', 'Tinggi Badan (cm)', results.heightRange, results.age);
+    }
+    
+    createChart(canvasId, label, range, age) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        
+        // Generate chart data
+        const chartData = {
+            labels: ['Minimum', 'Rata-rata', 'Maksimum'],
+            datasets: [{
+                label: label,
+                data: [range.min, range.p50, range.max],
+                backgroundColor: [
+                    'rgba(255, 193, 7, 0.8)',  // Yellow for minimum
+                    'rgba(40, 167, 69, 0.8)',  // Green for average
+                    'rgba(255, 193, 7, 0.8)'   // Yellow for maximum
+                ],
+                borderColor: [
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(255, 193, 7, 1)'
+                ],
+                borderWidth: 2
+            }]
+        };
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: label
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+    }
+    
+    displayInterpretation(results) {
+        const interpretationSection = document.getElementById('interpretationSection');
+        const interpretationContent = document.getElementById('interpretationContent');
+        
+        interpretationSection.style.display = 'block';
+        
+        let interpretationHTML = `
+            <div class="interpretation-item">
+                <h6 class="text-primary mb-2">
+                    <i class="fas fa-weight me-2"></i>
+                    Interpretasi Berat Badan
+                </h6>
+                <p class="mb-2">${results.interpretation.weight.normal}</p>
+                <div class="alert alert-info">
+                    <strong>Saran:</strong> Pertahankan pola makan sehat dan lakukan pemantauan rutin.
+                </div>
+            </div>
+            
+            <div class="interpretation-item">
+                <h6 class="text-info mb-2">
+                    <i class="fas fa-ruler-vertical me-2"></i>
+                    Interpretasi Tinggi Badan
+                </h6>
+                <p class="mb-2">${results.interpretation.height.normal}</p>
+                <div class="alert alert-info">
+                    <strong>Saran:</strong> Pastikan asupan nutrisi yang cukup dan aktivitas fisik yang sesuai.
+                </div>
+            </div>
+            
+            <div class="interpretation-item">
+                <h6 class="text-success mb-2">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Pemantauan Berkelanjutan
+                </h6>
+                <p class="mb-2">Pertumbuhan anak adalah proses dinamis yang perlu dipantau secara rutin.</p>
+                <div class="alert alert-warning">
+                    <strong>Ingat:</strong> Setiap anak memiliki pola pertumbuhan yang unik. Konsultasikan dengan tenaga kesehatan jika ada kekhawatiran.
+                </div>
+            </div>
+        `;
+        
+        interpretationContent.innerHTML = interpretationHTML;
+    }
+    
+    showLoading() {
+        const loadingHTML = `
+            <div class="loading-spinner show" id="easyModeLoading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Menghitung rentang normal...</p>
+            </div>
+        `;
+        
+        const form = document.getElementById('easyModeForm');
+        form.insertAdjacentHTML('afterend', loadingHTML);
+    }
+    
+    hideLoading() {
+        const loading = document.getElementById('easyModeLoading');
+        if (loading) {
+            loading.remove();
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Create notification
+        const notificationHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 1050; min-width: 300px;" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', notificationHTML);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            const notification = document.querySelector('.alert');
+            if (notification) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Global functions
+function calculateEasyMode() {
+    if (window.easyMode) {
+        window.easyMode.calculateEasyMode();
+    }
+}
+
+// Initialize Easy Mode when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.easyMode = new EnhancedEasyMode();
+    
+    // Add form validation
+    const inputs = document.querySelectorAll('#easyModeForm input, #easyModeForm select');
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1235 @@
+{% extends "base.html" %}
+
+{% block title %}Kalkulator Gizi WHO - anthroGizi v4.0.0{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="display-6 fw-bold text-gradient">Kalkulator Gizi WHO</h1>
+                <p class="lead">Hitung indeks pertumbuhan anak sesuai standar WHO 2006</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Informasi:</strong> Kalkulator ini menggunakan standar WHO 2006 untuk anak usia 0-5 tahun. 
+                    Pastikan data yang dimasukkan akurat untuk hasil yang optimal.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Selection -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-cog me-2"></i>
+                        Pilih Mode Penggunaan
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary mode-btn active" onclick="setMode('parent')">
+                            <i class="fas fa-user me-1"></i>
+                            Mode Orang Tua
+                        </button>
+                        <button type="button" class="btn btn-outline-primary mode-btn" onclick="setMode('healthcare')">
+                            <i class="fas fa-user-md me-1"></i>
+                            Mode Nakes
+                        </button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        Mode Orang Tua: Interface yang lebih sederhana dan intuitif<br>
+                        Mode Nakes: Fitur lengkap dengan detail medis
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Form -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calculator me-2"></i>
+                        Input Data Anak
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="calculatorForm">
+                        <!-- Child Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nama Anak</label>
+                                <input type="text" class="form-control" id="childName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Jenis Kelamin</label>
+                                <select class="form-select" id="gender" required>
+                                    <option value="">Pilih Gender</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Age Input Methods -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Metode Input Usia</label>
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-outline-primary age-method-btn active" 
+                                        onclick="setAgeMethod('months')" data-method="months">
+                                    <i class="fas fa-calendar-alt me-1"></i>Bulan
+                                </button>
+                                <button type="button" class="btn btn-outline-primary age-method-btn" 
+                                        onclick="setAgeMethod('dates')" data-method="dates">
+                                    <i class="fas fa-calendar-day me-1"></i>Tanggal Lahir & Ukur
+                                </button>
+                                <button type="button" class="btn btn-outline-primary age-method-btn" 
+                                        onclick="setAgeMethod('days')" data-method="days">
+                                    <i class="fas fa-clock me-1"></i>Hari
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Age Inputs -->
+                        <div id="ageInputs">
+                            <!-- Age in months (default) -->
+                            <div class="age-input-section" id="monthsSection">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Usia (bulan)</label>
+                                        <input type="number" class="form-control" id="ageMonths" 
+                                               min="0" max="60" step="0.1" placeholder="Contoh: 18.5">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Birth and measurement dates -->
+                            <div class="age-input-section" id="datesSection" style="display: none;">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Tanggal Lahir</label>
+                                        <input type="date" class="form-control" id="birthDate">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Tanggal Pengukuran</label>
+                                        <input type="date" class="form-control" id="measurementDate">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Age in days -->
+                            <div class="age-input-section" id="daysSection" style="display: none;">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Usia (hari)</label>
+                                        <input type="number" class="form-control" id="ageDays" 
+                                               min="0" max="1825" placeholder="Contoh: 547">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Measurement Types -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Tipe Pengukuran</label>
+                            <select class="form-select" id="measurementType" onchange="showMeasurementInputs()">
+                                <option value="basic">Berat & Tinggi Badan</option>
+                                <option value="all">Semua Jenis (Lengkap)</option>
+                                <option value="weight_only">Berat Badan Saja</option>
+                                <option value="height_only">Tinggi Badan Saja</option>
+                                <option value="head_circumference">Lingkar Kepala Saja</option>
+                            </select>
+                        </div>
+
+                        <!-- Measurement Inputs -->
+                        <div id="measurementInputs">
+                            <!-- Basic measurements -->
+                            <div class="measurement-section" id="basicSection">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Berat Badan (kg)</label>
+                                        <input type="number" class="form-control" id="weight" 
+                                               step="0.1" placeholder="Contoh: 8.5">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Tinggi Badan (cm)</label>
+                                        <input type="number" class="form-control" id="height" 
+                                               step="0.1" placeholder="Contoh: 72.5">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Head circumference -->
+                            <div class="measurement-section" id="headCircumferenceSection" style="display: none;">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Lingkar Kepala (cm)</label>
+                                        <input type="number" class="form-control" id="headCircumference" 
+                                               step="0.1" placeholder="Contoh: 45.2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mother Information -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Nama Ibu</label>
+                            <input type="text" class="form-control" id="motherName" 
+                                   placeholder="Masukkan nama ibu (opsional)">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary btn-lg me-2" onclick="calculateAll()">
+                                <i class="fas fa-calculator me-2"></i>Hitung Semua
+                            </button>
+                            <button type="button" class="btn btn-outline-success me-2" onclick="saveCalculation()">
+                                <i class="fas fa-save me-2"></i>Simpan Data
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="exportData()">
+                                <i class="fas fa-download me-2"></i>Export
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="col-lg-4">
+            <!-- Results Display -->
+            <div class="card shadow-sm border-0 mb-4" id="resultsPanel" style="display: none;">
+                <div class="card-header bg-gradient-success text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Hasil Perhitungan
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="calculationResults">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Charts -->
+            <div class="card shadow-sm border-0 mb-4" id="chartsPanel" style="display: none;">
+                <div class="card-header bg-gradient-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Grafik Pertumbuhan
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="growthCharts">
+                        <!-- Charts will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Tips -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient-warning text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Tips Profesional
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="tips-container">
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-balance-scale text-primary me-2"></i>
+                            <strong>Pengukuran yang Tepat:</strong>
+                            <span class="d-block mt-1">Gunakan timbangan digital yang terkalibrasi dan alas pengukur yang datar.</span>
+                        </div>
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-clock text-info me-2"></i>
+                            <strong>Waktu yang Ideal:</strong>
+                            <span class="d-block mt-1">Lakukan pengukuran pada pagi hari sebelum makan untuk hasil yang konsisten.</span>
+                        </div>
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-calendar-check text-success me-2"></i>
+                            <strong>Konsistensi:</strong>
+                            <span class="d-block mt-1">Lakukan pengukuran secara rutin sesuai jadwal KMS untuk monitoring yang optimal.</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-user-md text-warning me-2"></i>
+                            <strong>Konsultasi:</strong>
+                            <span class="d-block mt-1">Konsultasikan hasil yang tidak normal dengan tenaga kesehatan.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Recommendations -->
+    <div class="row mt-5" id="videoRecommendations" style="display: none;">
+        <div class="col-12">
+            <h3 class="section-title mb-4">
+                <i class="fas fa-video text-danger me-2"></i>
+                Video Edukasi Terkait
+            </h3>
+            <div class="row" id="videoList">
+                <!-- Videos will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.age-input-section {
+    transition: all 0.3s ease;
+}
+
+.measurement-section {
+    transition: all 0.3s ease;
+}
+
+.age-method-btn.active,
+.mode-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.result-card {
+    border-left: 4px solid var(--success-color);
+    transition: transform 0.2s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+}
+
+.chart-container {
+    min-height: 300px;
+    position: relative;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tip-item {
+    padding: 0.75rem;
+    background: var(--light-bg);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.video-card {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.video-thumbnail {
+    position: relative;
+    background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+    border-radius: 10px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.alert-custom {
+    border-left: 4px solid var(--info-color);
+}
+
+.section-title {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+</style>
+
+<script>
+// Enhanced Calculator System
+class WHOEnhancedCalculator {
+    constructor() {
+        this.currentMode = 'parent';
+        this.currentAgeMethod = 'months';
+        this.measurementData = {};
+        this.savedCalculations = [];
+        
+        this.initializeForm();
+        this.loadMotivationalMessages();
+    }
+    
+    initializeForm() {
+        // Set default measurement date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('measurementDate').value = today;
+        
+        // Initialize event listeners
+        this.setupEventListeners();
+    }
+    
+    setupEventListeners() {
+        // Real-time validation
+        const inputs = document.querySelectorAll('#calculatorForm input, #calculatorForm select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', this.validateInput.bind(this));
+            input.addEventListener('input', this.clearValidationError.bind(this));
+        });
+        
+        // Age method buttons
+        document.querySelectorAll('.age-method-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const method = e.target.dataset.method;
+                this.setAgeMethod(method);
+            });
+        });
+        
+        // Mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.target.textContent.toLowerCase().includes('nakes') ? 'healthcare' : 'parent';
+                this.setMode(mode);
+            });
+        });
+    }
+    
+    setMode(mode) {
+        this.currentMode = mode;
+        
+        // Update button states
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const activeBtn = mode === 'healthcare' ? 
+            document.querySelector('.mode-btn:contains("Nakes")') : 
+            document.querySelector('.mode-btn:contains("Orang Tua")');
+        
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        // Show/hide advanced features
+        this.toggleAdvancedFeatures(mode);
+    }
+    
+    toggleAdvancedFeatures(mode) {
+        const advancedSections = document.querySelectorAll('.healthcare-only');
+        
+        if (mode === 'healthcare') {
+            advancedSections.forEach(section => {
+                section.style.display = 'block';
+            });
+        } else {
+            advancedSections.forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+    }
+    
+    setAgeMethod(method) {
+        this.currentAgeMethod = method;
+        
+        // Update button states
+        document.querySelectorAll('.age-method-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const activeBtn = document.querySelector(`[data-method="${method}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        // Show/hide age input sections
+        document.querySelectorAll('.age-input-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        document.getElementById(`${method}Section`).style.display = 'block';
+    }
+    
+    showMeasurementInputs() {
+        const type = document.getElementById('measurementType').value;
+        
+        // Show/hide measurement sections
+        document.querySelectorAll('.measurement-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        switch(type) {
+            case 'basic':
+                document.getElementById('basicSection').style.display = 'block';
+                break;
+            case 'all':
+                document.getElementById('basicSection').style.display = 'block';
+                document.getElementById('headCircumferenceSection').style.display = 'block';
+                break;
+            case 'head_circumference':
+                document.getElementById('headCircumferenceSection').style.display = 'block';
+                break;
+            case 'weight_only':
+                // Show only weight input
+                document.getElementById('basicSection').style.display = 'block';
+                document.querySelector('#basicSection .col-md-6:last-child').style.display = 'none';
+                break;
+            case 'height_only':
+                // Show only height input
+                document.getElementById('basicSection').style.display = 'block';
+                document.querySelector('#basicSection .col-md-6:first-child').style.display = 'none';
+                break;
+        }
+    }
+    
+    validateInput(event) {
+        const input = event.target;
+        const value = input.value;
+        
+        // Remove existing error styling
+        input.classList.remove('is-invalid', 'is-valid');
+        
+        // Validate based on input type
+        let isValid = true;
+        let errorMessage = '';
+        
+        switch(input.id) {
+            case 'weight':
+            case 'height':
+            case 'headCircumference':
+                if (value && (parseFloat(value) <= 0 || parseFloat(value) > 200)) {
+                    isValid = false;
+                    errorMessage = 'Nilai tidak valid';
+                }
+                break;
+            case 'ageMonths':
+                if (value && (parseFloat(value) < 0 || parseFloat(value) > 60)) {
+                    isValid = false;
+                    errorMessage = 'Usia harus antara 0-60 bulan';
+                }
+                break;
+            case 'ageDays':
+                if (value && (parseInt(value) < 0 || parseInt(value) > 1825)) {
+                    isValid = false;
+                    errorMessage = 'Usia harus antara 0-1825 hari';
+                }
+                break;
+        }
+        
+        if (isValid && value) {
+            input.classList.add('is-valid');
+        } else if (!isValid) {
+            input.classList.add('is-invalid');
+            if (errorMessage) {
+                this.showInputError(input, errorMessage);
+            }
+        }
+    }
+    
+    clearValidationError(event) {
+        const input = event.target;
+        input.classList.remove('is-invalid');
+        this.hideInputError(input);
+    }
+    
+    showInputError(input, message) {
+        // Create or update error tooltip
+        let errorDiv = input.parentNode.querySelector('.input-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'input-error invalid-feedback d-block';
+            input.parentNode.appendChild(errorDiv);
+        }
+        errorDiv.textContent = message;
+    }
+    
+    hideInputError(input) {
+        const errorDiv = input.parentNode.querySelector('.input-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }
+    
+    async calculateAll() {
+        // Validate form
+        if (!this.validateForm()) {
+            return;
+        }
+        
+        // Show loading
+        this.showLoading();
+        
+        try {
+            // Collect form data
+            const formData = this.collectFormData();
+            
+            // Calculate age if using date method
+            if (this.currentAgeMethod === 'dates' && formData.birth_date && formData.measurement_date) {
+                formData.age_months = this.calculateAgeFromDates(formData.birth_date, formData.measurement_date);
+            } else if (this.currentAgeMethod === 'days') {
+                formData.age_months = formData.age_days / 30.44; // Convert days to months
+            }
+            
+            // Make API call
+            const response = await fetch('/api/calculate-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.displayResults(result.results);
+                this.displayCharts(result.results.chart_data);
+                this.showVideoRecommendations(result.results);
+                this.hideLoading();
+                
+                // Show success notification
+                this.showNotification('Perhitungan berhasil dilakukan!', 'success');
+            } else {
+                this.hideLoading();
+                this.showNotification(result.message || 'Terjadi kesalahan', 'error');
+            }
+            
+        } catch (error) {
+            this.hideLoading();
+            this.showNotification('Terjadi kesalahan koneksi', 'error');
+            console.error('Calculation error:', error);
+        }
+    }
+    
+    validateForm() {
+        const requiredFields = ['childName', 'gender'];
+        let isValid = true;
+        
+        // Check required fields
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            }
+        });
+        
+        // Check age inputs based on current method
+        switch(this.currentAgeMethod) {
+            case 'months':
+                const ageMonths = document.getElementById('ageMonths');
+                if (!ageMonths.value || ageMonths.value < 0 || ageMonths.value > 60) {
+                    ageMonths.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+            case 'dates':
+                const birthDate = document.getElementById('birthDate');
+                const measurementDate = document.getElementById('measurementDate');
+                if (!birthDate.value || !measurementDate.value) {
+                    if (!birthDate.value) birthDate.classList.add('is-invalid');
+                    if (!measurementDate.value) measurementDate.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+            case 'days':
+                const ageDays = document.getElementById('ageDays');
+                if (!ageDays.value || ageDays.value < 0 || ageDays.value > 1825) {
+                    ageDays.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+        }
+        
+        // Check measurement inputs based on selected type
+        const measurementType = document.getElementById('measurementType').value;
+        const weight = document.getElementById('weight');
+        const height = document.getElementById('height');
+        const headCircumference = document.getElementById('headCircumference');
+        
+        switch(measurementType) {
+            case 'basic':
+            case 'all':
+                if (!weight.value || weight.value <= 0) {
+                    weight.classList.add('is-invalid');
+                    isValid = false;
+                }
+                if (!height.value || height.value <= 0) {
+                    height.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+            case 'weight_only':
+                if (!weight.value || weight.value <= 0) {
+                    weight.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+            case 'height_only':
+                if (!height.value || height.value <= 0) {
+                    height.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+            case 'head_circumference':
+                if (!headCircumference.value || headCircumference.value <= 0) {
+                    headCircumference.classList.add('is-invalid');
+                    isValid = false;
+                }
+                break;
+        }
+        
+        if (!isValid) {
+            this.showNotification('Harap lengkapi semua field yang wajib diisi', 'warning');
+        }
+        
+        return isValid;
+    }
+    
+    collectFormData() {
+        const formData = {
+            child_name: document.getElementById('childName').value,
+            gender: document.getElementById('gender').value,
+            mother_name: document.getElementById('motherName').value,
+            weight: parseFloat(document.getElementById('weight').value) || null,
+            height: parseFloat(document.getElementById('height').value) || null,
+            head_circumference: parseFloat(document.getElementById('headCircumference').value) || null,
+            age_months: parseFloat(document.getElementById('ageMonths').value) || null,
+            age_days: parseInt(document.getElementById('ageDays').value) || null,
+            birth_date: document.getElementById('birthDate').value,
+            measurement_date: document.getElementById('measurementDate').value,
+            measurement_type: document.getElementById('measurementType').value
+        };
+        
+        return formData;
+    }
+    
+    calculateAgeFromDates(birthDate, measurementDate) {
+        const birth = new Date(birthDate);
+        const measurement = new Date(measurementDate);
+        const diffTime = Math.abs(measurement - birth);
+        const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+        return diffMonths;
+    }
+    
+    displayResults(results) {
+        const resultsPanel = document.getElementById('resultsPanel');
+        const resultsContainer = document.getElementById('calculationResults');
+        
+        // Show results panel
+        resultsPanel.style.display = 'block';
+        
+        // Generate results HTML
+        let resultsHTML = `
+            <div class="mb-4">
+                <h6 class="text-primary mb-3">Informasi Anak</h6>
+                <div class="row">
+                    <div class="col-6">
+                        <small class="text-muted">Nama:</small>
+                        <div class="fw-semibold">${results.child_name || 'Tidak diketahui'}</div>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Usia:</small>
+                        <div class="fw-semibold">${results.age_months ? results.age_months.toFixed(1) : '-'} bulan</div>
+                    </div>
+                    <div class="col-6 mt-2">
+                        <small class="text-muted">Berat:</small>
+                        <div class="fw-semibold">${results.weight || '-'} kg</div>
+                    </div>
+                    <div class="col-6 mt-2">
+                        <small class="text-muted">Tinggi:</small>
+                        <div class="fw-semibold">${results.height || '-'} cm</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h6 class="text-primary mb-3">Hasil Z-Score</h6>
+        `;
+        
+        // Add results for each index
+        const indices = [
+            {key: 'waz', label: 'Berat untuk Usia (WAZ)', unit: ''},
+            {key: 'haz', label: 'Tinggi untuk Usia (HAZ)', unit: ''},
+            {key: 'whz', label: 'Berat untuk Tinggi (WHZ)', unit: ''},
+            {key: 'baz', label: 'IMT untuk Usia (BAZ)', unit: ''}
+        ];
+        
+        if (results.hcz !== undefined) {
+            indices.push({key: 'hcz', label: 'Lingkar Kepala untuk Usia (HCZ)', unit: ''});
+        }
+        
+        indices.forEach(index => {
+            if (results[index.key] !== undefined) {
+                const statusKey = `${index.key}_status`;
+                const colorKey = `${index.key}_color`;
+                
+                resultsHTML += `
+                    <div class="result-item mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${index.label}</strong>
+                                <div class="small text-muted">Z-Score: ${results[index.key]}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-${results[colorKey]}">
+                                    ${results[statusKey]}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        resultsHTML += '</div>';
+        
+        // Add summary chart
+        resultsHTML += `
+            <div class="mb-4">
+                <h6 class="text-primary mb-3">Ringkasan Status Gizi</h6>
+                <canvas id="summaryChart" width="300" height="200"></canvas>
+            </div>
+        `;
+        
+        resultsContainer.innerHTML = resultsHTML;
+        
+        // Create summary chart
+        this.createSummaryChart(results);
+    }
+    
+    createSummaryChart(results) {
+        const ctx = document.getElementById('summaryChart').getContext('2d');
+        
+        // Prepare data for chart
+        const labels = [];
+        const data = [];
+        const colors = [];
+        
+        const indices = ['waz', 'haz', 'whz', 'baz'];
+        if (results.hcz !== undefined) indices.push('hcz');
+        
+        indices.forEach(index => {
+            if (results[index] !== undefined) {
+                labels.push(index.toUpperCase());
+                data.push(results[index]);
+                
+                // Color based on status
+                const statusKey = `${index}_status`;
+                const status = results[statusKey];
+                
+                switch(status) {
+                    case 'Gizi Baik':
+                        colors.push('#28a745');
+                        break;
+                    case 'Gizi Kurang':
+                        colors.push('#ffc107');
+                        break;
+                    case 'Gizi Buruk':
+                        colors.push('#dc3545');
+                        break;
+                    case 'Gizi Lebih':
+                        colors.push('#17a2b8');
+                        break;
+                    default:
+                        colors.push('#6c757d');
+                }
+            }
+        });
+        
+        // Create chart
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Z-Score',
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: -3,
+                        max: 3,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+    
+    displayCharts(chartData) {
+        const chartsPanel = document.getElementById('chartsPanel');
+        const chartsContainer = document.getElementById('growthCharts');
+        
+        chartsPanel.style.display = 'block';
+        
+        let chartsHTML = '';
+        
+        // Weight chart
+        if (chartData.weight_chart) {
+            chartsHTML += `
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">${chartData.weight_chart.title}</h6>
+                    <div class="chart-container">
+                        <canvas id="weightChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Height chart
+        if (chartData.height_chart) {
+            chartsHTML += `
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">${chartData.height_chart.title}</h6>
+                    <div class="chart-container">
+                        <canvas id="heightChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            `;
+        }
+        
+        chartsContainer.innerHTML = chartsHTML;
+        
+        // Create charts
+        if (chartData.weight_chart) {
+            this.createGrowthChart('weightChart', chartData.weight_chart);
+        }
+        if (chartData.height_chart) {
+            this.createGrowthChart('heightChart', chartData.height_chart);
+        }
+    }
+    
+    createGrowthChart(canvasId, chartData) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.ages.map(age => `${age} bulan`),
+                datasets: [{
+                    label: 'WHO Reference (P50)',
+                    data: chartData.who_reference,
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    tension: 0.4,
+                    fill: false
+                }, {
+                    label: 'Data Anak',
+                    data: chartData.child_data.map(point => point.y),
+                    borderColor: '#007bff',
+                    backgroundColor: '#007bff',
+                    pointBackgroundColor: '#007bff',
+                    pointBorderColor: '#fff',
+                    pointRadius: 6,
+                    tension: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Usia (bulan)'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: canvasId.includes('weight') ? 'Berat (kg)' : 'Tinggi (cm)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    showVideoRecommendations(results) {
+        const videoSection = document.getElementById('videoRecommendations');
+        const videoList = document.getElementById('videoList');
+        
+        // Mock video recommendations based on results
+        const videos = this.getVideoRecommendations(results);
+        
+        let videosHTML = '';
+        videos.forEach(video => {
+            videosHTML += `
+                <div class="col-lg-4 mb-4">
+                    <div class="card video-card h-100" onclick="playVideo('${video.id}')">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">${video.title}</h6>
+                            <p class="card-text text-muted small">${video.description}</p>
+                            <div class="video-meta">
+                                <small class="text-muted">
+                                    <i class="fas fa-eye me-1"></i>${video.views}
+                                </small>
+                                <small class="text-muted ms-2">
+                                    <i class="fas fa-user-md me-1"></i>${video.expert}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        videoList.innerHTML = videosHTML;
+        videoSection.style.display = 'block';
+    }
+    
+    getVideoRecommendations(results) {
+        // Mock video data - in production, this would fetch from YouTube API
+        return [
+            {
+                id: 'video1',
+                title: 'Panduan MPASI untuk Anak 6-12 Bulan',
+                description: 'Video lengkap tentang pemberian makanan pendamping ASI',
+                views: '125K views',
+                expert: 'Dr. Ratih, Sp.A'
+            },
+            {
+                id: 'video2',
+                title: 'Tanda-tanda Gizi Buruk pada Anak',
+                description: 'Mengenali gejala awal gizi buruk dan langkah penanganan',
+                views: '89K views',
+                expert: 'Sarah, M.Gizi'
+            },
+            {
+                id: 'video3',
+                title: 'Stimulasi Motorik Anak Usia 1-3 Tahun',
+                description: 'Aktivitas dan permainan untuk stimulasi perkembangan motorik',
+                views: '67K views',
+                expert: 'Diana, M.Psi'
+            }
+        ];
+    }
+    
+    async saveCalculation() {
+        const formData = this.collectFormData();
+        
+        if (!formData.child_name) {
+            this.showNotification('Harap isi nama anak terlebih dahulu', 'warning');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/save-calculation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification('Data berhasil disimpan!', 'success');
+            } else {
+                this.showNotification(result.message || 'Gagal menyimpan data', 'error');
+            }
+        } catch (error) {
+            this.showNotification('Terjadi kesalahan saat menyimpan', 'error');
+        }
+    }
+    
+    async exportData() {
+        const formData = this.collectFormData();
+        
+        try {
+            const response = await fetch('/api/export-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    format: 'excel',
+                    data: [formData]
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification('Data berhasil diexport!', 'success');
+                // In a real application, this would trigger a download
+            } else {
+                this.showNotification(result.message || 'Gagal export data', 'error');
+            }
+        } catch (error) {
+            this.showNotification('Terjadi kesalahan saat export', 'error');
+        }
+    }
+    
+    showLoading() {
+        // Add loading overlay
+        const loadingHTML = `
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-2">Menghitung...</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', loadingHTML);
+    }
+    
+    hideLoading() {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.remove();
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Create notification
+        const notificationHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 1050; min-width: 300px;" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', notificationHTML);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            const notification = document.querySelector('.alert');
+            if (notification) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    loadMotivationalMessages() {
+        // Load motivational message every 20 seconds
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/get-motivational-message');
+                const result = await response.json();
+                
+                if (result.message) {
+                    // Show motivational banner
+                    this.showMotivationalBanner(result.message);
+                }
+            } catch (error) {
+                console.error('Failed to load motivational message:', error);
+            }
+        }, 20000);
+    }
+    
+    showMotivationalBanner(message) {
+        const bannerHTML = `
+            <div class="motivational-banner alert alert-info alert-dismissible fade show position-fixed" 
+                 style="bottom: 20px; right: 20px; z-index: 1050; max-width: 400px;" role="alert">
+                <i class="fas fa-heart text-danger me-2"></i>
+                <strong>Motivasi:</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Remove existing banner
+        const existingBanner = document.querySelector('.motivational-banner');
+        if (existingBanner) {
+            existingBanner.remove();
+        }
+        
+        document.body.insertAdjacentHTML('beforeend', bannerHTML);
+        
+        // Auto remove after 10 seconds
+        setTimeout(() => {
+            const banner = document.querySelector('.motivational-banner');
+            if (banner) {
+                banner.remove();
+            }
+        }, 10000);
+    }
+}
+
+// Global functions
+function setMode(mode) {
+    if (window.calculator) {
+        window.calculator.setMode(mode);
+    }
+}
+
+function setAgeMethod(method) {
+    if (window.calculator) {
+        window.calculator.setAgeMethod(method);
+    }
+}
+
+function showMeasurementInputs() {
+    if (window.calculator) {
+        window.calculator.showMeasurementInputs();
+    }
+}
+
+function calculateAll() {
+    if (window.calculator) {
+        window.calculator.calculateAll();
+    }
+}
+
+function saveCalculation() {
+    if (window.calculator) {
+        window.calculator.saveCalculation();
+    }
+}
+
+function exportData() {
+    if (window.calculator) {
+        window.calculator.exportData();
+    }
+}
+
+function playVideo(videoId) {
+    // In a real application, this would open a video modal
+    alert(`Memutar video: ${videoId}`);
+}
+
+// Initialize calculator when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.calculator = new WHOEnhancedCalculator();
+});
+</script>
+{% endblock %}

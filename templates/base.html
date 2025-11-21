@@ -20,16 +20,56 @@
     <!-- Custom Theme CSS -->
     <style>
         :root {
-            --primary-color: #4e73df;
+            /* --- PALET WARNA MODERN PARENTING (Glassmorphism) --- */
+            
+            /* Warna Utama: Biru Tenang (Trust & Health) */
+            --primary-color: #4e73df; 
+            
+            /* Warna Kedua: Abu-abu Lembut (Neutral) */
             --secondary-color: #858796;
-            --accent-color: {{ theme.accent }};
-            --bg-color: {{ theme.bg }};
-            --card-color: {{ theme.card }};
-            --text-color: {{ theme.text }};
-            --border-color: {{ theme.border }};
-            --shadow-color: {{ theme.shadow }};
-            --gradient-bg: {{ theme.gradient }};
+            
+            /* Warna Aksen: Soft Coral/Peach (Warmth & Child-friendly) */
+            /* Digunakan untuk tombol penting atau highlight */
+            --accent-color: #FF8A65; 
+            
+            /* Warna Background Halaman (Di belakang kaca) */
+            --bg-color: #F0F2F5; 
+            
+            /* --- PENGATURAN KACA (GLASSMORPHISM) --- */
+            
+            /* Warna Kartu: Putih dengan transparansi 70% */
+            --card-color: rgba(255, 255, 255, 0.70); 
+            
+            /* Warna Teks: Biru Gelap Pekat (Agar mudah dibaca mata orang tua) */
+            --text-color: #2E4053; 
+            
+            /* Warna Border: Putih semi-transparan untuk efek pinggiran kaca */
+            --border-color: rgba(255, 255, 255, 0.6); 
+            
+            /* Bayangan: Lembut dan menyebar */
+            --shadow-color: rgba(31, 38, 135, 0.15); 
+            
+            /* Background Gradient: Gradasi pastel lembut (Biru ke Ungu Muda) */
+            /* Ini akan membuat efek transparan pada kartu terlihat jelas */
+            --gradient-bg: linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%);
         }
+
+    /* Tambahan agar efek Glassmorphism aktif pada elemen kartu */
+    .card, .glass-panel {
+        background: var(--card-color) !important;
+        backdrop-filter: blur(12px); /* Efek Blur Kaca */
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 32px 0 var(--shadow-color);
+    }
+    
+    /* Memastikan background body menggunakan gradient agar kaca terlihat */
+    body {
+        background: var(--bg-color);
+        background-image: var(--gradient-bg);
+        background-attachment: fixed; /* Agar background tetap saat di-scroll */
+        background-size: cover;
+    }
 
         * {
             margin: 0;

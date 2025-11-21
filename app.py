@@ -128,6 +128,12 @@ def easy_mode():
     """Easy mode for quick reference"""
     return render_template('easy_mode.html')
 
+@app.route('/growth-velocity')
+def growth_velocity_page():
+    """Halaman Kecepatan Pertumbuhan"""
+    # Pastikan Anda membuat file template growth_velocity.html nanti
+    return render_template('growth_velocity.html')
+
 @app.route('/kpsp')
 def kpsp_page():
     """KPSP screening page"""

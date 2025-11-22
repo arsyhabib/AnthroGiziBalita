@@ -476,7 +476,7 @@ def inject_globals():
         'app_version': '4.0.0',
         'author': 'Habib Arsy and TIM',
         'current_year': datetime.now().year,
-        'contact_wa': '628123456789'  # <--- TAMBAHKAN BARIS INI (Ganti dengan nomor Anda)
+        'contact_wa': '628123456789',  # <--- TAMBAHKAN BARIS INI (Ganti dengan nomor Anda)
         'motivational_message': '' # Tambahkan ini juga agar aman
     }
 

@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Kecepatan Pertumbuhan - anthroGizi v4.0.0{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header text-center">
+                <h1 class="display-6 fw-bold text-gradient">Kecepatan Pertumbuhan</h1>
+                <p class="lead">Pantau laju kenaikan berat dan tinggi badan anak antar waktu</p>
+                <div class="alert alert-info d-inline-block">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <strong>Fungsi:</strong> Menghitung <i>Growth Velocity</i> untuk mendeteksi 
+                    <i>Growth Faltering</i> (gagal tumbuh) atau kenaikan berat badan yang tidak adekuat (<em>Weight Faltering</em>) lebih dini.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Tambah Data Pengukuran
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="velocityForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Usia saat Pengukuran (bulan)</label>
+                            <input type="number" class="form-control" id="inputAge" 
+                                   step="0.1" placeholder="Contoh: 12.5" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Berat (kg)</label>
+                                <input type="number" class="form-control" id="inputWeight" 
+                                       step="0.01" placeholder="Contoh: 9.2" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Tinggi (cm)</label>
+                                <input type="number" class="form-control" id="inputHeight" 
+                                       step="0.1" placeholder="Contoh: 75.5" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary" onclick="addMeasurement()">
+                                <i class="fas fa-plus me-2"></i>Tambahkan ke Daftar
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <small class="text-muted fst-italic">
+                                * Minimal masukkan 2 data pengukuran yang berbeda waktunya untuk menghitung kecepatan.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-gradient-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list-ol me-2"></i>
+                        Daftar Riwayat Ukur
+                    </h5>
+                    <span class="badge bg-light text-dark" id="countBadge">0 Data</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive mb-3">
+                        <table class="table table-hover" id="measurementsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Usia (bln)</th>
+                                    <th>Berat (kg)</th>
+                                    <th>Tinggi (cm)</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="measurementsList">
+                                <tr id="emptyRow">
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="fas fa-clipboard-list fa-2x mb-2 d-block"></i>
+                                        Belum ada data pengukuran. Silakan tambah data di panel kiri.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-primary btn-lg" 
+                                id="calculateBtn" onclick="calculateVelocity()" disabled>
+                            <i class="fas fa-calculator me-2"></i>Hitung Kecepatan Tumbuh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4" id="resultsSection" style="display: none;">
+        <div class="col-12">
+            <div class="section">
+                <h2><i class="fas fa-chart-line"></i> Hasil Analisis Kecepatan</h2>
+                <div class="row" id="velocityResults">
+                    </div>
+                
+                <div class="alert alert-warning mt-4">
+                    <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Penting untuk Orang Tua</h5>
+                    <p class="mb-0">
+                        Kecepatan tumbuh yang <strong>terlalu lambat</strong> (kurang dari standar) bisa menjadi tanda awal risiko stunting atau masalah nutrisi. 
+                        Segera konsultasikan ke dokter anak atau Puskesmas jika grafik mendatar atau menurun.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles matching base.html glassmorphism */
+    .velocity-card {
+        transition: transform 0.3s ease;
+        border-left: 5px solid var(--primary-color);
+    }
+    
+    .velocity-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .velocity-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .velocity-unit {
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(var(--primary-color), 0.05);
+    }
+</style>
+
+<script>
+class GrowthVelocitySystem {
+    constructor() {
+        this.measurements = [];
+    }
+
+    addMeasurement() {
+        const age = parseFloat(document.getElementById('inputAge').value);
+        const weight = parseFloat(document.getElementById('inputWeight').value);
+        const height = parseFloat(document.getElementById('inputHeight').value);
+
+        // Validation
+        if (!age || !weight || !height) {
+            this.showNotification('Mohon lengkapi semua data (Usia, Berat, Tinggi)', 'warning');
+            return;
+        }
+
+        // Add to array
+        this.measurements.push({
+            age_months: age,
+            weight: weight,
+            height: height
+        });
+
+        // Sort by age (ascending)
+        this.measurements.sort((a, b) => a.age_months - b.age_months);
+
+        // Update UI
+        this.updateTable();
+        this.resetInput();
+        this.showNotification('Data pengukuran berhasil ditambahkan', 'success');
+    }
+
+    removeMeasurement(index) {
+        this.measurements.splice(index, 1);
+        this.updateTable();
+    }
+
+    updateTable() {
+        const tbody = document.getElementById('measurementsList');
+        const countBadge = document.getElementById('countBadge');
+        const calculateBtn = document.getElementById('calculateBtn');
+
+        tbody.innerHTML = '';
+
+        if (this.measurements.length === 0) {
+            tbody.innerHTML = `
+                <tr id="emptyRow">
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="fas fa-clipboard-list fa-2x mb-2 d-block"></i>
+                        Belum ada data pengukuran.
+                    </td>
+                </tr>
+            `;
+            calculateBtn.disabled = true;
+        } else {
+            this.measurements.forEach((data, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.age_months} bln</td>
+                    <td>${data.weight} kg</td>
+                    <td>${data.height} cm</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="velocitySystem.removeMeasurement(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Enable button if we have at least 2 points
+            calculateBtn.disabled = this.measurements.length < 2;
+        }
+
+        countBadge.textContent = `${this.measurements.length} Data`;
+    }
+
+    resetInput() {
+        document.getElementById('inputAge').value = '';
+        document.getElementById('inputWeight').value = '';
+        document.getElementById('inputHeight').value = '';
+        document.getElementById('inputAge').focus();
+    }
+
+    async calculateVelocity() {
+        if (this.measurements.length < 2) return;
+
+        this.showLoading();
+
+        try {
+            const response = await fetch('/api/growth-velocity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    measurements: this.measurements
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.displayResults(result.velocities);
+                this.hideLoading();
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+                this.showNotification('Perhitungan selesai!', 'success');
+            } else {
+                this.hideLoading();
+                this.showNotification(result.message || 'Gagal menghitung', 'error');
+            }
+
+        } catch (error) {
+            this.hideLoading();
+            this.showNotification('Terjadi kesalahan sistem', 'error');
+            console.error(error);
+        }
+    }
+
+    displayResults(velocities) {
+        const container = document.getElementById('velocityResults');
+        document.getElementById('resultsSection').style.display = 'block';
+        
+        let html = '';
+
+        velocities.forEach((v, index) => {
+            html += `
+                <div class="col-md-6 mb-4">
+                    <div class="card velocity-card h-100">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 fw-bold text-primary">Periode ${v.period}</h6>
+                            <small class="text-muted">Durasi: ${v.time_diff} tahun</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 border-end">
+                                    <small class="text-muted d-block mb-1">Kenaikan Berat</small>
+                                    <div class="velocity-value text-success">
+                                        ${v.weight_velocity > 0 ? '+' : ''}${v.weight_velocity}
+                                    </div>
+                                    <span class="velocity-unit">kg / tahun</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block mb-1">Kenaikan Tinggi</small>
+                                    <div class="velocity-value text-info">
+                                        ${v.height_velocity > 0 ? '+' : ''}${v.height_velocity}
+                                    </div>
+                                    <span class="velocity-unit">cm / tahun</span>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Status Pertumbuhan:</small>
+                                <span class="badge ${v.weight_velocity > 0 ? 'bg-success' : 'bg-warning'}">
+                                    ${v.weight_velocity > 0 ? 'Naik' : 'Perlu Perhatian'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    showLoading() {
+        // Menggunakan loading overlay dari base.html
+        if(typeof showLoading === 'function') showLoading();
+    }
+
+    hideLoading() {
+        if(typeof hideLoading === 'function') hideLoading();
+    }
+
+    showNotification(msg, type) {
+        // Menggunakan fungsi notifikasi global dari base.html jika ada
+        if(typeof showNotification === 'function') {
+            showNotification(msg, type);
+        } else {
+            alert(msg);
+        }
+    }
+}
+
+// Initialize
+let velocitySystem;
+document.addEventListener('DOMContentLoaded', function() {
+    velocitySystem = new GrowthVelocitySystem();
+    window.velocitySystem = velocitySystem; // Expose to global scope for onclick events
+});
+
+// Wrapper functions for HTML onclick attributes
+function addMeasurement() {
+    velocitySystem.addMeasurement();
+}
+
+function calculateVelocity() {
+    velocitySystem.calculateVelocity();
+}
+</script>
+{% endblock %}

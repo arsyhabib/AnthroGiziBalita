@@ -429,6 +429,14 @@ def save_calculation():
             'error': str(e)
         })
 
+@app.route('/api/theme', methods=['POST'])
+def set_theme():
+    return jsonify({'success': True})
+
+@app.route('/api/mode', methods=['POST'])
+def set_mode():
+    return jsonify({'success': True})
+
 @app.route('/api/get-motivational-message')
 def get_motivational_message():
     """Get random motivational message"""

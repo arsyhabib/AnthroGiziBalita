@@ -251,7 +251,7 @@
                                 <li><i class="fas fa-check text-success"></i> Channel 10k+ Subscriber</li>
                                 <li><i class="fas fa-check text-success"></i> Update Rutin</li>
                             </ul>
-                            <a href="{{ url_for('library') }}" class="btn btn-info">
+                            <a href="{{ url_for('library_page') }}" class="btn btn-info">
                                 <i class="fas fa-book-open"></i> Buka Perpustakaan
                             </a>
                         </div>
@@ -316,7 +316,7 @@
             </div>
             
             <div class="text-center mt-4">
-                <a href="{{ url_for('premium') }}" class="btn btn-outline-warning btn-lg">
+                <a href="{{ url_for('premium_page') }}" class="btn btn-outline-warning btn-lg">
                     <i class="fas fa-info-circle"></i> Lihat Detail Premium
                 </a>
             </div>
@@ -440,7 +440,7 @@
         
         // Redirect to premium page for detailed checkout
         setTimeout(() => {
-            window.location.href = '{{ url_for("premium") }}';
+            window.location.href = '{{ url_for("premium_page") }}';
         }, 1000);
     }
 

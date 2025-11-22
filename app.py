@@ -460,12 +460,16 @@ def internal_error(error):
 
 # Context processors
 @app.context_processor
+# Di app.py
+@app.context_processor
 def inject_globals():
     return {
         'app_name': 'anthroGizi v4.0.0',
         'app_version': '4.0.0',
         'author': 'Habib Arsy and TIM',
-        'current_year': datetime.now().year
+        'current_year': datetime.now().year,
+        'contact_wa': '628123456789'  # <--- TAMBAHKAN BARIS INI (Ganti dengan nomor Anda)
+        'motivational_message': '' # Tambahkan ini juga agar aman
     }
 
 if __name__ == '__main__':
